@@ -40,7 +40,7 @@ async function validateAccess() {
     const user = users.find(u => u.id === userId);
 
     // Check if the user exists and has the required permission
-    if (!user || !user.permittedBtns.includes("younghearts")) {
+    if (!user || !user.permittedBtns.includes("granturismo")) {
       alert('Je hebt geen toegang tot deze pagina. Stouterik!');
       window.location.href = '/';
       return;
