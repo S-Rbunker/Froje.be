@@ -42,7 +42,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
 
     if (user) {
       document.cookie = `userId=${user.id}; path=/`;
-      window.location.href = '/index.html';
+      window.location.href = '/';
     } else {
       document.getElementById('error-message').style.display = 'block';
     }
