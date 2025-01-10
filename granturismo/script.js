@@ -180,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
         castButton.title = 'Chromecast is not supported on Safari.';
         }
     }
+
     // Check if the cast button exists
     if (castButton) {
         castButton.addEventListener('click', () => {

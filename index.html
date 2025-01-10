@@ -34,7 +34,13 @@
         font-size: 2rem; /* Each item takes the full width */
     }
 }
-        .btn { margin: 10px; padding: 30px 80px; background-color: #343536; color: white; border:#ffffff; border-style: solid; border-radius: 10px; cursor: pointer; font-size: 30px; font-weight: bold;}
+
+        #dynamic-buttons {
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+        }
+        .btn { margin: 10px; padding: 30px 80px; background-color: #343536; color: white; border:#ffffff; border-style: solid; border-radius: 10px; cursor: pointer; font-size: 35px; font-weight: bold;}
         .btn:hover { background-color: #ffffff; color: black; }
         @media (max-width: 552px) {
           .btn {
@@ -118,7 +124,7 @@
     </script>
       <div id="button-container" style="display: none;">
          <button class="btn" id="younghearts" data-id="younghearts" onclick="window.location.href='/younghearts'">📺Young Hearts📺</button>
-        <button class="btn" id="wildone" data-id="wildone" onclick="alert('You clicked Wild One!')">Wild One</button>
+        <button class="btn" id="granturismo" data-id="granturismo" onclick="window.location.href='/granturismo'">🏎️Gran Turismo🏎️</button>
         <button class="btn" id="risingstar" data-id="risingstar" onclick="alert('You clicked Rising Star!')">Rising Star</button>
       </div>
 </body>
