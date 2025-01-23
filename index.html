@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/Rbunker music logo youtube.ico">
+    <title>I LOVE FROJIE</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center !important;;
+            align-items: center !important;;
+            flex-direction: column !important;;
+            flex-wrap: nowrap !important;;
+            height: 100vh;
+            margin: 0 !important;;
+            background-color: black;
+            color: white !important;;
+            font-family: 'Arial', sans-serif !important;; 
+        }
+
+        h1, #welcome-message {
+            font-size: 3.5rem;
+            text-align: center;
+            white-space: nowrap;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 3rem !important;
+        }
+
+        @media (max-width: 552px) {
+    h1, #welcome-message {
+        white-space: normal;
+        font-size: 2rem; /* Each item takes the full width */
+    }
+}
+
+        #dynamic-buttons {
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+        }
+        .btn { margin: 10px; padding: 30px 80px; background-color: #343536; color: white; border:#ffffff; border-style: solid; border-radius: 10px; cursor: pointer; font-size: 35px; font-weight: bold;}
+        .btn:hover { background-color: #ffffff; color: black; }
+        @media (max-width: 552px) {
+          .btn {
+            padding: 15px 40px; font-size: 15px;
+          }
+        }
+        #custom-gif {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+  <div id="welcome-message">
+     Welkom, <span id="display-name">User!</span> 
+  </div>
+    <div id="dynamic-buttons"></div>
+    <button class="btn" id="logout-button">Uitloggen</button>
+    <img id="custom-gif" src="" alt="Custom GIF">
+
+    <script>
+      async function getUserFromCookies() {
+        const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+          const [key, value] = cookie.trim().split('=');
+          acc[key] = value;
+          return acc;
+        }, {});
+  
+        const userId = cookies.userId;
+  
+        if (!userId) {
+          window.location.href = '/login';
+          return null;
+        }
+  
+        const response = await fetch('http://141.253.109.250:80/api/database');
+        const users = await response.json();
+  
+        return users.find(user => user.id === userId) || null;
+      }
+  
+      async function loadPage() {
+        const user = await getUserFromCookies();
+  
+        if (!user) {
+          document.cookie = 'userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          window.location.href = '/login';
+          return;
+        }
+  
+        
+        document.title = user.title || 'Bonjour';
+
+        const customGif = document.getElementById('custom-gif');
+        customGif.src = user.gif || '';
+
+        const displayNameElement = document.getElementById('display-name');
+        displayNameElement.textContent = user.displayName;
+        displayNameElement.style.color = user.color || 'white';
+
+        // Render authorized buttons
+        const buttonsContainer = document.getElementById('dynamic-buttons');
+        user.permittedBtns.forEach(btnId => {
+          // Dynamically clone and render only the permitted buttons
+          const templateButton = document.querySelector(`#button-container button[data-id="${btnId}"]`);
+          if (templateButton) {
+            const authorizedButton = templateButton.cloneNode(true);
+            buttonsContainer.appendChild(authorizedButton);
+          }
+        });
+      }
+      
+
+      document.getElementById('logout-button').addEventListener('click', () => {
+      document.cookie = 'userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      location.reload();
+      });
+  
+      loadPage();
+    </script>
+      <div id="button-container" style="display: none;">
+         <button class="btn" id="younghearts" data-id="younghearts" onclick="window.location.href='/younghearts'">📺Young Hearts📺</button>
+        <button class="btn" id="granturismo" data-id="granturismo" onclick="window.location.href='/granturismo'">🏎️Gran Turismo🏎️</button>
+        <button class="btn" id="risingstar" data-id="risingstar" onclick="alert('You clicked Rising Star!')">Rising Star</button>
+      </div>
+</body>
+</html>

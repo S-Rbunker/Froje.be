@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!--=============== REMIXICONS ===============-->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
+
+    <!--=============== CSS ===============-->
+    <link rel="stylesheet" href="./assets/css/styles.css" />
+
+    <title>Inloggen</title>
+    <link rel="icon" type="image/x-icon" href="/Rbunker music logo youtube.ico">
+  </head>
+  <body>
+    <div class="container">
+      <div class="login">
+        <div class="login__content">
+          <img class="login__img" src="http://141.253.109.250/ArtistPic.png" alt="Login image" />
+
+          <form class="login__form" id="login-form">
+            <div>
+              <h1 class="login__title">
+                <span>Welkommmmmmm</span>
+                bij Froje.be!
+              </h1>
+
+              <p class="login__description">
+                Hallowkiesss gelieve in te loggen 😊
+              </p>
+            </div>
+
+            <div>
+              <div class="login__inputs">
+                <div>
+                  <label for="email" class="login__label">Gebruiker</label>
+                  <input class="login__input" type="text" id="email" placeholder="Uw Gebruikersnaam" required />
+                </div>
+
+                <div>
+                  <label for="password" class="login__label">Wachtwoord</label>
+                  <div class="login__box">
+                    <input class="login__input" type="password" id="password" placeholder="Uw Wachtwoord" required />
+                    <i class="ri-eye-off-line login__eye" id="input-icon"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div id="error-message" class="login__error" style="color: red; display: none;">
+                Gebruikersnaam of wachtwoord onjuist.
+              </div>
+
+            <div>
+              <div class="login__buttons">
+                <button class="login__button">Ik wil erin!</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  <!--=============== MAIN JS ===============-->
+  <script src="./assets/js/main.js"></script>
+
+  </body>
+</html>
