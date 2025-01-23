@@ -33,7 +33,7 @@ async function validateAccess() {
     }
 
     // Fetch user data
-    const response = await fetch('http://141.253.109.250:80/api/database');
+    const response = await fetch('https://141.253.109.250/api/database');
     const users = await response.json();
 
     // Find the user by ID

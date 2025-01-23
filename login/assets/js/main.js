@@ -35,7 +35,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
   const password = document.getElementById('password').value;
 
   try {
-    const response = await fetch('http://141.253.109.250:80/api/database');
+    const response = await fetch('https://141.253.109.250/api/database');
     const users = await response.json();
 
     const user = users.find(u => u.username === username && u.password === password);
