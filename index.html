@@ -64,48 +64,45 @@
 
     <script>
       async function getUserFromCookies() {
-        const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-          const [key, value] = cookie.trim().split('=');
-          acc[key] = value;
-          return acc;
-        }, {});
-  
-        const userId = cookies.userId;
-  
-        if (!userId) {
+        const response = await fetch('https://api.froje.be/user', {
+  method: 'GET',
+  credentials: 'include', // Ensures the browser will include cookies in the request
+});
+        if (response.status === 401) {
           window.location.href = '/login';
           return null;
         }
-  
-        const response = await fetch('https://141.253.109.250/api/database');
-        const users = await response.json();
-  
-        return users.find(user => user.id === userId) || null;
+    
+        if (!response.ok) {
+          console.error('Failed to fetch user data:', await response.text());
+          return null;
+        }
+    
+        return await response.json();
       }
-  
+    
       async function loadPage() {
         const user = await getUserFromCookies();
-  
+    
         if (!user) {
           document.cookie = 'userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
           window.location.href = '/login';
           return;
         }
-  
-        
+    
+        // Update page content
         document.title = user.title || 'Bonjour';
-
+    
         const customGif = document.getElementById('custom-gif');
         customGif.src = user.gif || '';
-
+    
         const displayNameElement = document.getElementById('display-name');
         displayNameElement.textContent = user.displayName;
         displayNameElement.style.color = user.color || 'white';
-
+    
         // Render authorized buttons
         const buttonsContainer = document.getElementById('dynamic-buttons');
         user.permittedBtns.forEach(btnId => {
-          // Dynamically clone and render only the permitted buttons
           const templateButton = document.querySelector(`#button-container button[data-id="${btnId}"]`);
           if (templateButton) {
             const authorizedButton = templateButton.cloneNode(true);
@@ -113,13 +110,15 @@
           }
         });
       }
-      
-
-      document.getElementById('logout-button').addEventListener('click', () => {
-      document.cookie = 'userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      location.reload();
-      });
-  
+    
+      document.getElementById('logout-button').addEventListener('click', async () => {
+  await fetch('https://api.froje.be/logout', {
+    method: 'POST',
+    credentials: 'include',
+  });
+  location.reload();
+});
+    
       loadPage();
     </script>
       <div id="button-container" style="display: none;">

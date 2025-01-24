@@ -17,39 +17,40 @@ let timer;
 
 
 async function validateAccess() {
-    // Retrieve cookies
-    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-      const [key, value] = cookie.trim().split('=');
-      acc[key] = value;
-      return acc;
-    }, {});
-
-    const userId = cookies.userId;
-
-    // Redirect if no valid cookie
-    if (!userId) {
+    try {
+      // Make a request to the server, including credentials (the cookie).
+      // The server can see the cookie userId, even if the JS can't.
+      const response = await fetch('https://api.froje.be/user', {
+        method: 'GET',
+        credentials: 'include',  // important: sends the cookie cross-site
+      });
+  
+      // If server says 401 or 404, user is not valid
+      if (!response.ok) {
+        // e.g. 401 Unauthorized, 404 Not Found => redirect to login
+        window.location.href = '/login';
+        return;
+      }
+  
+      // Parse the user object
+      const user = await response.json();
+  
+      // Check if user has the required permission
+      if (!user.permittedBtns || !user.permittedBtns.includes('younghearts')) {
+        alert('Je hebt geen toegang tot deze pagina. Stouterik!');
+        window.location.href = '/';
+        return;
+      }
+  
+      console.log('Access granted:', user);
+  
+    } catch (error) {
+      console.error('Error validating access:', error);
+      // On error, also redirect to login
       window.location.href = '/login';
-      return;
     }
-
-    // Fetch user data
-    const response = await fetch('https://141.253.109.250/api/database');
-    const users = await response.json();
-
-    // Find the user by ID
-    const user = users.find(u => u.id === userId);
-
-    // Check if the user exists and has the required permission
-    if (!user || !user.permittedBtns.includes("younghearts")) {
-      alert('Je hebt geen toegang tot deze pagina. Stouterik!');
-      window.location.href = '/';
-      return;
-    }
-
-    // If validation passes, allow access to the page
-    console.log('Access granted:', user);
   }
-
+  
 validateAccess();
 
 const hideControls = () => {
@@ -171,6 +172,7 @@ window['__onGCastApiAvailable'] = function(isAvailable) {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Ensure all elements are properly selected
+
     const castButton = document.querySelector('.cast-button');
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     if (isSafari) {
