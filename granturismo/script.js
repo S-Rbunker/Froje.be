@@ -36,7 +36,7 @@ async function validateAccess() {
       const user = await response.json();
   
       // Check if user has the required permission
-      if (!user.permittedBtns || !user.permittedBtns.includes('younghearts')) {
+      if (!user.permittedBtns || !user.permittedBtns.includes('granturismo')) {
         alert('Je hebt geen toegang tot deze pagina. Stouterik!');
         window.location.href = '/';
         return;
