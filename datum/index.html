@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datum</title>
+    <!-- Preconnect to Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Include Elegant and Lovely Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/Rbunker music logo youtube.ico">
+    <style>
+        /* Global Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #ffe6f0, #ffb3c6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 420px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Hearts */
+        .container::before,
+        .container::after {
+            content: '💖';
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.2;
+        }
+
+        .container::before {
+            top: -10px;
+            left: -10px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .container::after {
+            bottom: -10px;
+            right: -10px;
+            animation: float 6s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(360deg); }
+            100% { transform: translateY(0) rotate(720deg); }
+        }
+
+        .date-input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .date-input-container input {
+            width: 60px;
+            padding: 0.6rem;
+            font-size: 1.1rem;
+            border: 2px solid #ff99cc;
+            border-radius: 10px;
+            text-align: center;
+            margin: 0 0.5rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+
+        .date-input-container input:focus {
+            border-color: #ff66a3;
+            box-shadow: 0 0 5px rgba(255, 102, 163, 0.5);
+        }
+
+        .date-input-container span {
+            font-size: 1.3rem;
+            color: #ff66a3;
+        }
+
+        .btn {
+            background-color: #ff66a3; /* Pink */
+            color: #ffffff;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+
+        .btn:hover {
+            background-color: #ff4d94;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            margin-top: 1.2rem;
+            font-size: 1.1rem;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .error {
+            color: #e60000;
+            font-weight: 600;
+        }
+
+        /* Shake Animation for Error */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        .success-date {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #ff66a3;
+            margin-top: 1rem;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Countdown Styles */
+        .countdown {
+            margin-top: 1.2rem;
+            font-size: 1.1rem;
+            color: #333333;
+            font-weight: 500;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .countdown-unit {
+            background-color: #ffe6f0;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .countdown-unit .number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ff66a3;
+        }
+
+        .countdown-unit .label {
+            font-size: 0.9rem;
+            color: #ff66a3;
+            margin-top: 0.3rem;
+        }
+
+        .heart-container {
+            margin-top: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 1.5s ease-in-out forwards;
+        }
+
+        .heart-container .heart {
+            font-size: 5rem;
+            color: #ff69b4; /* Pink */
+            animation: heartbeat 1.5s infinite;
+        }
+
+        .heart-container .text {
+            font-size: 2.5rem;
+            font-family: 'Pacifico', cursive;
+            color: #ff69b4;
+            margin-top: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 500px) {
+            .date-input-container input {
+                width: 50px;
+                margin: 0.3rem;
+                padding: 0.5rem;
+                font-size: 1rem;
+            }
+
+            .date-input-container span {
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 0.7rem;
+                font-size: 1rem;
+            }
+
+            .success-date {
+                font-size: 1.4rem;
+            }
+
+            .countdown {
+                font-size: 1rem;
+            }
+
+            .countdown-container {
+                gap: 0.5rem;
+            }
+
+            .countdown-unit .number {
+                font-size: 1.3rem;
+            }
+
+            .countdown-unit .label {
+                font-size: 0.8rem;
+            }
+
+            .heart-container .heart {
+                font-size: 4rem;
+            }
+
+            .heart-container .text {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="date-input-container">
+            <input type="number" id="day-input" placeholder="..." min="1" max="31" />
+            <span>/11/2024</span>
+        </div>
+        <button class="btn" id="check-button">Datumcontrole 🙃</button>
+        <div class="message" id="message"></div>
+        <div class="success-date" id="full-date"></div>
+        <div class="countdown" id="countdown" style="display: none;">
+            <div class="countdown-container" id="countdown-container">
+                <!-- Countdown units will be inserted here -->
+            </div>
+        </div>
+        <div class="heart-container" id="heart-container" style="display: none;">
+            <div class="heart">❤</div>
+            <div class="text">F + S</div>
+        </div>
+    </div>
+
+    <script>
+        let wrongAttempts = 0;
+        let countdownInterval;
+
+        const checkButton = document.getElementById('check-button');
+        const dayInputField = document.getElementById('day-input');
+        const messageEl = document.getElementById('message');
+        const fullDateEl = document.getElementById('full-date');
+        const countdownEl = document.getElementById('countdown');
+        const countdownContainerEl = document.getElementById('countdown-container');
+        const heartContainerEl = document.getElementById('heart-container');
+
+        checkButton.addEventListener('click', function() {
+            const dayInput = dayInputField.value.trim();
+
+            // Clear previous messages and intervals
+            messageEl.textContent = '';
+            messageEl.classList.remove('error', 'shake');
+            fullDateEl.textContent = '';
+            countdownEl.style.display = 'none';
+            countdownContainerEl.innerHTML = '';
+            heartContainerEl.style.display = 'none';
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            if (dayInput === '24') {
+                // Correct day
+                checkButton.remove(); // Remove the button
+                fullDateEl.innerHTML = '24/11/2024';
+
+                // Display success message with colored names
+                const successMessage = 'Silasje en Frojie zijn het gelukkigste koppeltje ooit sinds:';
+                const successMessageEl = document.createElement('div');
+                successMessageEl.innerHTML = successMessage
+                    .replace('Silasje', '<span style="color: red;">Silasje</span>')
+                    .replace('Frojie', '<span style="color: magenta;">Frojie</span>');
+                successMessageEl.style.marginTop = '1rem';
+                successMessageEl.style.fontSize = '1.1rem';
+                successMessageEl.style.color = '#333333';
+                successMessageEl.style.animation = 'fadeIn 1s ease-in-out';
+                fullDateEl.after(successMessageEl);
+
+                // Initialize countdown
+                const targetDate = new Date('2024-11-24T14:00:00');
+                updateCountdown(); // Initial call
+                countdownEl.style.display = 'block';
+
+                // Update countdown every second
+                countdownInterval = setInterval(updateCountdown, 1000);
+
+                function updateCountdown() {
+                    const now = new Date();
+                    let elapsed = now - targetDate;
+
+                    if (elapsed < 0) {
+                        elapsed = 0; // If the current date is before the target date
+                    }
+
+                    // Calculate months, days, hours, minutes, seconds
+                    const totalSeconds = Math.floor(elapsed / 1000);
+                    const seconds = totalSeconds % 60;
+                    const totalMinutes = Math.floor(totalSeconds / 60);
+                    const minutes = totalMinutes % 60;
+                    const totalHours = Math.floor(totalMinutes / 60);
+                    const hours = totalHours % 24;
+                    const totalDays = Math.floor(totalHours / 24);
+                    const days = totalDays % 30;
+                    const months = Math.floor(totalDays / 30);
+
+                    // Format with leading zeros
+                    const formattedSeconds = String(seconds).padStart(2, '0');
+                    const formattedMinutes = String(minutes).padStart(2, '0');
+                    const formattedHours = String(hours).padStart(2, '0');
+                    const formattedDays = String(days).padStart(2, '0');
+                    const formattedMonths = String(months).padStart(2, '0');
+
+                    // Create or update countdown units
+                    countdownContainerEl.innerHTML = `
+                        <div class="countdown-unit">
+                            <div class="number">${formattedMonths}</div>
+                            <div class="label">maanden</div>
+                        </div>
+                        <div class="countdown-unit">
+                            <div class="number">${formattedDays}</div>
+                            <div class="label">dagen</div>
+                        </div>
+                        <div class="countdown-unit">
+                            <div class="number">${formattedHours}</div>
+                            <div class="label">uur</div>
+                        </div>
+                        <div class="countdown-unit">
+                            <div class="number">${formattedMinutes}</div>
+                            <div class="label">minuten</div>
+                        </div>
+                        <div class="countdown-unit">
+                            <div class="number">${formattedSeconds}</div>
+                            <div class="label">seconden</div>
+                        </div>
+                    `;
+                }
+
+                // Show heart container
+                heartContainerEl.style.display = 'flex';
+            } else {
+                // Incorrect day
+                wrongAttempts += 1;
+                messageEl.textContent = "Foute datum!! Tip: de start van het mooiste verhaal ooit 👀";
+                messageEl.classList.add('error');
+
+                if (wrongAttempts >= 3) { // After 3 wrong attempts
+                    messageEl.classList.add('shake');
+                    wrongAttempts = 0; // Reset counter after animation
+                }
+            }
+        });
+
+        // Remove 'shake' class after animation completes to allow re-triggering
+        messageEl.addEventListener('animationend', function(e) {
+            if (e.animationName === 'shake') {
+                this.classList.remove('shake');
+            }
+        });
+
+        // Clear error message when a new number is entered
+        dayInputField.addEventListener('input', function() {
+            messageEl.textContent = '';
+            messageEl.classList.remove('error', 'shake');
+        });
+    </script>
+</body>
+</html>
