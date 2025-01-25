@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0" />
+  <title>Chatroom</title>
+  <!-- Font Awesome for icons -->
+  <!-- Updated link to a newer FA version -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-7KwfM0R8nxTG1syNnvu0gcel+EVEWfXg8rTMbvm3nOLHxzVIqOoFDgIwNTv9OVwBDPBTdfbtH31V2s9Hy6Djxg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+/>
+  <style>
+    /* Basic reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #000; /* Black background */
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      width: 95%;
+      max-width: 600px;
+      height: 95%;
+      background-color: #1c1c1c; /* Dark gray container */
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .chat-header {
+      background-color: #111;
+      padding: 16px;
+      text-align: center;
+      font-size: 1.2rem;
+      position: relative;
+    }
+    .chat-header i {
+      margin-right: 8px;
+      color: #00aced; /* Light blue icon color */
+    }
+
+    /* The main messages area */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      /* Hide horizontal scroll if text is too long */
+      overflow-x: hidden;
+      padding: 10px;
+      white-space: initial;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .message .icon {
+      margin-right: 8px;
+    }
+
+    .message .username {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+
+    /* Force wrapping for long messages */
+    .message .text {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      line-height: 1.4;
+    }
+
+    /* Input area */
+    .chat-input-area {
+      display: flex;
+      border-top: 1px solid #333;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 12px;
+      background-color: #2b2b2b;
+      color: #fff;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+    }
+    .chat-input::placeholder {
+      color: #777;
+    }
+
+    .send-btn {
+      width: 60px;
+      display: flex; /* so icon is centered */
+      justify-content: center;
+      align-items: center;
+      background-color: #00aced;
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .send-btn:hover {
+      background-color: #0084a8;
+    }
+
+    /* Scrollbar styling for messages */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1c1c1c;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #333;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chat-container">
+    <div class="chat-header">
+      <i class="fas fa-comments"></i> Chatroom
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." />
+      <button class="send-btn" id="sendBtn">
+        <!-- Paper plane icon -->
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // 1) GET /user to identify who I am:
+    async function getUserFromCookies() {
+      const response = await fetch('https://api.froje.be/user', {
+        method: 'GET',
+        credentials: 'include', // ensures the browser includes cookies
+      });
+      if (response.status === 401) {
+        window.location.href = '/login';
+        return null;
+      }
+      if (!response.ok) {
+        console.error('Failed to fetch user data:', await response.text());
+        return null;
+      }
+      return await response.json();
+    }
+
+    // We'll store the current user object globally
+    let currentUser = null;
+    // We'll also keep an interval handle for message polling
+    let pollingInterval = null;
+
+    // 2) Chat functions
+    const messagesDiv = document.getElementById('messages');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    // Append a message to the messagesDiv
+    function appendMessage(msg) {
+      // If the backend merges displayName and color for us:
+      const { displayName, color, text, isSelf } = msg;
+
+      // Create a wrapper div
+      const msgDiv = document.createElement('div');
+      msgDiv.classList.add('message');
+
+      // If it's me, we'll do white bold, plus (You) after name
+      let finalName = displayName;
+      let finalColor = color; // normal user color
+      if (isSelf) {
+        finalName += ' (You)';
+        finalColor = '#fff'; // white
+      }
+
+      // Build the inner HTML
+      msgDiv.innerHTML = `
+        <div class="icon"><i class="fas fa-user-circle"></i></div>
+        <div>
+          <span class="username" style="color: ${finalColor}; font-weight: bold;">${finalName}:</span>
+          <span class="text">${text}</span>
+        </div>
+      `;
+
+      messagesDiv.appendChild(msgDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    // Fetch messages from the server, then display them
+    async function fetchMessages() {
+      try {
+        const resp = await fetch('https://api.froje.be/chat-messages', {
+          credentials: 'include', // we include cookies
+        });
+        if (!resp.ok) {
+          console.error('Error fetching chat messages:', resp.status);
+          return;
+        }
+        const data = await resp.json();
+        // data is an array of messages with { displayName, color, text, isSelf }
+        // Clear current messages
+        messagesDiv.innerHTML = '';
+        data.forEach((msg) => appendMessage(msg));
+      } catch (err) {
+        console.error('Failed to fetch messages:', err);
+      }
+    }
+
+    // Send a new message
+    async function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      // POST the new message to the server
+      try {
+        const resp = await fetch('https://api.froje.be/chat-messages', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+        if (!resp.ok) {
+          console.error('Failed to send message:', resp.status);
+          return;
+        }
+        // clear input
+        chatInput.value = '';
+        // re-fetch messages to update quickly
+        await fetchMessages();
+      } catch (err) {
+        console.error('Error sending message:', err);
+      }
+    }
+
+    // Kick off everything once user is loaded
+    async function loadPage() {
+      currentUser = await getUserFromCookies();
+      if (!currentUser) {
+        // If user is not found, redirect to login
+        document.cookie = 'userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        window.location.href = '/login';
+        return;
+      }
+
+      // Optionally, set the page title
+      document.title = currentUser.title || 'Chatroom';
+
+      // Start polling for messages
+      await fetchMessages();
+      pollingInterval = setInterval(fetchMessages, 5000); // every 5 seconds
+    }
+
+    // Setup event listeners
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    // Finally, call loadPage once
+    loadPage();
+  </script>
+</body>
+</html>
