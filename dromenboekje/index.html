@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dromenboekje</title>
+    <!-- Preconnect to Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Include Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/Rbunker music logo youtube.ico">
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            --primary-color: #1E90FF; /* Blue */
+            --secondary-color: #ffffff;
+            --accent-color: #1E90FF; /* Blue for blue-theme */
+            --error-color: #e60000;
+            --background-color: #f0f4f8;
+            --text-color: #333333;
+            --button-color: #1E90FF; /* Blue button */
+            --button-hover-color: #1C86EE; /* Darker blue */
+        }
+
+        /* Theme Classes */
+        .blue-theme {
+            --primary-color: #1E90FF;
+            --accent-color: #1E90FF; /* Blue */
+            --button-color: #1E90FF;
+            --button-hover-color: #1C86EE;
+            --container-background: #e6f0ff;
+            --background-color: #4097df; /* Light blue */
+        }
+
+        .pink-theme {
+    --primary-color: #ff66a3;
+    --accent-color: #ff66a3; /* Pink */
+    --button-color: #ff66a3;
+    --button-hover-color: #ff5599;
+    --container-background: #ffe6f0; /* Light pink */
+    --background-color: #e685ac; /* Light pink for page background */
+}
+
+        .bedtime-theme {
+            --primary-color: #483D8B; /* Dark Slate Blue */
+            --accent-color: #FFB6C1; /* Light Pink */
+            --background-color: #2F4F4F; /* Dark Slate Gray */
+            --text-color: #f0e6f6; /* Light Lavender */
+            --button-color: #28a745; /* Green (unchanged) */
+            --button-hover-color: #218838; /* Darker Green */
+            --container-background: #2F4F4F;
+        }
+
+        /* Global Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .container {
+            background-color: var(--container-background, var(--secondary-color));
+            padding: 2.5rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Decorative Elements */
+        .container::before,
+        .container::after {
+            content: '';
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.2;
+        }
+
+        /* Decorative Elements for Blue Theme */
+        .container.blue-theme::before {
+            content: '🔵';
+            top: -20px;
+            left: -20px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .container.blue-theme::after {
+            content: '🔵';
+            bottom: -20px;
+            right: -20px;
+            animation: float 6s ease-in-out infinite reverse;
+        }
+
+        /* Decorative Elements for Pink Theme */
+        .container.pink-theme::before {
+            content: '💋';
+            top: -10px;
+            left: -10px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .container.pink-theme::after {
+            content: '💋';
+            bottom: -10px;
+            right: -10px;
+            animation: float 6s ease-in-out infinite reverse;
+        }
+
+        /* Decorative Elements for Bedtime Theme */
+        .container.bedtime-theme::before {
+            content: '🌙';
+            top: -20px;
+            left: -20px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .container.bedtime-theme::after {
+            content: '🌙';
+            bottom: -20px;
+            right: -20px;
+            animation: float 6s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(360deg); }
+            100% { transform: translateY(0) rotate(720deg); }
+        }
+
+        /* Date Input Styles */
+        .date-input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .date-input-container input {
+            width: 60px;
+            padding: 0.6rem;
+            font-size: 1.1rem;
+            border: 2px solid var(--accent-color);
+            border-radius: 10px;
+            text-align: center;
+            margin: 0 0.5rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .date-input-container input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 5px rgba(255, 102, 163, 0.5);
+        }
+
+        .date-input-container span {
+            font-size: 1.3rem;
+            color: var(--accent-color);
+        }
+
+        /* Button Styles */
+        .btn {
+            background-color: var(--button-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .btn:hover {
+            background-color: var(--button-hover-color);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Message Styles */
+        .message {
+            margin-top: 1.2rem;
+            font-size: 1.1rem;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .error {
+            color: var(--error-color);
+            font-weight: 600;
+        }
+
+        /* Shake Animation for Error */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        /* Success Date Styles */
+        .success-date {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-top: 1rem;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Countdown Styles */
+        .countdown {
+            margin-top: 1.2rem;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            font-weight: 500;
+            animation: fadeIn 1s ease-in-out;
+            display: none;
+        }
+
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .countdown-unit {
+            background-color: #ffe6f0;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .countdown-unit .number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .countdown-unit .label {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            margin-top: 0.3rem;
+        }
+
+        /* Heart Container */
+        .heart-container {
+            margin-top: 2.5rem;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 1.5s ease-in-out forwards;
+        }
+
+        .heart-container .heart {
+            font-size: 5rem;
+            color: var(--accent-color);
+            animation: heartbeat 1.5s infinite;
+        }
+
+        .heart-container .text {
+            font-size: 2.5rem;
+            font-family: 'Pacifico', cursive;
+            color: var(--accent-color);
+            margin-top: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Bedtime Stories Layout */
+        .stories-layout {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stories-header {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--accent-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .story-card {
+            background-color: var(--secondary-color);
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .story-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-top: 0.5rem;
+        }
+
+        /* Story Content Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background-color: var(--secondary-color);
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            animation: fadeIn 0.5s ease-in-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .modal-story-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        .modal-story-content {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+
+        /* Bedtime Theme Enhancements */
+        .bedtime-theme .container {
+            background-color: #2F4F4F;
+        }
+
+        .bedtime-theme .countdown-unit {
+            background-color: #483D8B;
+        }
+
+        .bedtime-theme .countdown-unit .number,
+        .bedtime-theme .countdown-unit .label {
+            color: #FFB6C1;
+        }
+
+        .bedtime-theme .story-card {
+            background-color: #483D8B;
+        }
+
+        .bedtime-theme .story-title {
+            color: #f0e6f6;
+        }
+
+        .bedtime-theme .modal-content {
+            background-color: #2F4F4F;
+            color: #f0e6f6;
+        }
+
+        .bedtime-theme .modal-story-title {
+            color: #FFB6C1;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 2rem 1.5rem;
+            }
+
+            .date-input-container input {
+                width: 50px;
+                margin: 0.3rem;
+                padding: 0.5rem;
+                font-size: 1rem;
+            }
+
+            .date-input-container span {
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 0.7rem;
+                font-size: 1rem;
+            }
+
+            .success-date {
+                font-size: 1.4rem;
+            }
+
+            .countdown-unit {
+                min-width: 70px;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .countdown-unit .number {
+                font-size: 1.3rem;
+            }
+
+            .countdown-unit .label {
+                font-size: 0.8rem;
+            }
+
+            .heart-container .heart {
+                font-size: 4rem;
+            }
+
+            .heart-container .text {
+                font-size: 2rem;
+            }
+
+            .stories-header {
+                font-size: 1.5rem;
+            }
+
+            .story-title {
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .modal-story-title {
+                font-size: 1.3rem;
+            }
+
+            .modal-story-content {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body class="blue-theme">
+    <div class="container blue-theme" id="container">
+        <!-- Phase 1: First Date Input -->
+        <div id="phase-1">
+            <h2>Het begin van het mooiste verhaal</h2>
+            <div class="date-input-container">
+                <input type="number" id="day-input-1" placeholder="..." min="1" max="31" aria-label="Dag van de datum 24 november 2024" />
+                <span>/11/2024</span>
+            </div>
+            <button class="btn" id="check-button-1">Datumcontrole 🙃</button>
+            <div class="message" id="message-1"></div>
+        </div>
+
+        <!-- Phase 2: First Kiss Date Input -->
+        <div id="phase-2" style="display: none;">
+            <h2>Zijn eerste kusje</h2>
+            <div class="date-input-container">
+                <input type="number" id="day-input-2" placeholder="..." min="1" max="31" aria-label="Dag van de eerste kus datum 13 januari 2025" />
+                <span>/01/2025</span>
+            </div>
+            <button class="btn" id="check-button-2">Datumcontrole 🙃</button>
+            <div class="message" id="message-2"></div>
+        </div>
+
+        <!-- Phase 3: Bedtime Stories Layout -->
+        <div id="phase-3" class="stories-layout">
+            <div class="stories-header">Silas zijn dromenboekje 😴🥰</div>
+            <div class="stories-grid" id="stories-grid">
+                <!-- Story Templates -->
+                <div class="story-card" data-story="story1">
+                    <div>✨</div>
+                    <div class="story-title">Verhaal 1</div>
+                </div>
+                <div class="story-card" data-story="story2">
+                    <div>✨</div>
+                    <div class="story-title">Verhaal 2</div>
+                </div>
+                <div class="story-card" data-story="story3">
+                    <div>✨</div>
+                    <div class="story-title">Verhaal 3</div>
+                </div>
+                <!-- Add more story cards as needed -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Story Content -->
+    <div class="modal" id="story-modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-modal">&times;</button>
+            <div class="modal-story-title" id="modal-story-title">Verhaal Titel</div>
+            <div class="modal-story-content" id="modal-story-content">
+                <!-- Story content goes here -->
+                <p>Dit is een template voor het eerste bedtijdverhaal. Vervang deze tekst met jouw eigen verhaal.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript Code for Multi-Phase Webapp
+
+        // Phase Elements
+        const phase1 = document.getElementById('phase-1');
+        const phase2 = document.getElementById('phase-2');
+        const phase3 = document.getElementById('phase-3');
+        const container = document.getElementById('container');
+
+        // Phase 1 Elements
+        const checkButton1 = document.getElementById('check-button-1');
+        const dayInput1 = document.getElementById('day-input-1');
+        const message1 = document.getElementById('message-1');
+
+        // Phase 2 Elements
+        const checkButton2 = document.getElementById('check-button-2');
+        const dayInput2 = document.getElementById('day-input-2');
+        const message2 = document.getElementById('message-2');
+
+        // Phase 3 Elements
+        const storiesGrid = document.getElementById('stories-grid');
+
+        // Modal Elements
+        const storyModal = document.getElementById('story-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const modalTitle = document.getElementById('modal-story-title');
+        const modalContent = document.getElementById('modal-story-content');
+
+        // Function to Validate Input
+        function validateInput(input, correctDay, messageEl, phaseToShow, themeClass) {
+            const day = input.value.trim();
+            if (day === String(correctDay)) {
+                // Clear previous messages and input
+                messageEl.textContent = '';
+                messageEl.classList.remove('error', 'shake');
+                input.value = '';
+
+                // Transition to next phase
+                phaseToShow.style.display = 'block';
+                input.parentElement.parentElement.style.display = 'none';
+
+                // Change Theme
+                container.classList.remove('blue-theme', 'pink-theme', 'bedtime-theme');
+                container.classList.add(themeClass);
+                document.body.classList.remove('blue-theme', 'pink-theme', 'bedtime-theme');
+                document.body.classList.add(themeClass);
+            } else {
+                // Incorrect Input
+                messageEl.textContent = "Foute datum!! 👀";
+                messageEl.classList.add('error');
+
+                // Trigger Shake Animation
+                messageEl.classList.add('shake');
+
+                // Reset Shake Animation after it's done
+                messageEl.addEventListener('animationend', () => {
+                    messageEl.classList.remove('shake');
+                }, { once: true });
+            }
+        }
+
+        // Phase 1 Check Button Click
+        checkButton1.addEventListener('click', () => {
+            validateInput(dayInput1, 24, message1, phase2, 'pink-theme');
+        });
+
+        // Phase 2 Check Button Click
+        checkButton2.addEventListener('click', () => {
+            validateInput(dayInput2, 13, message2, phase3, 'bedtime-theme');
+        });
+
+        // Clear Error Messages on New Input for Phase 1
+        dayInput1.addEventListener('input', () => {
+            message1.textContent = '';
+            message1.classList.remove('error', 'shake');
+        });
+
+        // Clear Error Messages on New Input for Phase 2
+        dayInput2.addEventListener('input', () => {
+            message2.textContent = '';
+            message2.classList.remove('error', 'shake');
+        });
+
+        // Story Data (Replace with your actual stories)
+        const stories = {
+            story1: {
+                title: 'De perfecte dag',
+                content: 'Eeeeeeerst waren we samen in de colruyttt ingrediënten aan het kopen voor onze pasta, daarna gingen we naar mn huis om het klaar te makennnn en dan hebben we het samen opgegeten terwijl we de rest van de avond aan het plannen warennnn daarna deden we giga schuimfeestje en ik kreeg zeep in mn oogggg jij heb dan de zeep uit mn oog gedaan en dan ging het schuimfeestje weer verderrr daarna deden we een kussengevechttt (ik werd volledig ingemaakt 🥲) want jij was mij suuuper hard aan het kietelennn en ik kon niets meer doennn daarna gingen we in mn bedje samen een film kijken op de laptopp, we waren aan het knuffelennn maar toen viel je in slaap in mn armen en heb ik je verder geknuffeld en met je haartjes gespeeldd en kusjes op je hoofdje gegevennn 🥰🥰 daarna viel ik ook in slaap en toen werd ik wakkerrrr'
+            },
+            story2: {
+                title: 'Een wandelingetje in het bos',
+                content: 'We waren handje in handje aan het wandelen in het bossss en we waren aan het praten over alle leuke dingen die we nog konden doen samen zoals mij schminken en schuimfeestjes enzooo, dan gingen we naar jouw thuis om mij te schminkennnn je had geen idee wat je ging maken maar ik wou super graag een minion zijn dus je probeerde mij te schminken als een minion (het was fire 🔥🙃) en daarna heb je mijn haar in 2 staartjes gedaannn, daarna ben ik zo naar kph gegaan als minion, iedereen vond het mega grappig en iedereen wist toen ook dat we samen waren en ze waren allemaal suuuuper blij voor onsss 🫠🫠 achter kph zijn we samen naar mn huis geweest en hebben we gezellig samen met snackies (en ik als minion 😝) naar de nieuwste minion film gekekennn, we waren aan het knuffelennn en toen viel je inslaap tijdens de film en dan heb ik je verder geknuffeld en gespeeld met je haar en kusjes gegeven op je hoofdjeeee 🥰🥰🥰'
+            },
+            story3: {
+                title: 'Valentijn',
+                content: 'Er was eens een jongen en een meisje. Ze waren al 3 maanden het gelukkigste koppeltje van heeel de aardbol en ze konden niet zonder elkaar. Het was een heel speciale dag voor de jongen en het meisje, het was een dag die ze nooit snel zouden vergeten, een dag waar alle koppeltjes aan elkaar denken en met hun liefjes doorbrengen. 💫✨️❤️Valentijn❤️✨️💫. De jongen had voor deze speciale dag een verassing voorbereid voor hem en zijn liefje, die hij trouwens zooooo enorm enorm graag ziet. Ze gingen samen naar ✨️de cinema✨️. En zo begon deze mooie dag, het jongentje ging samen met zijn mama zijn allermooiste liefje ophalen aan haar huis en zo gingen ze samen naar de kinepolis. De mama zette hen af en ze gingen vervolgens handje in handje de cinema binnen. Als eerste gingen ze snackies gaan kopen in het winkeltje, de jongen mocht kiezen en besloot om frozen fantas te kopen en de groootste pot popcorn die ze maar konden vinden. Zo gingen ze samen de zaal binnen. Ze zaten op de comfortzeteltjes in het midden, omdat het valentijn was. De film waar ze naartoe gingen was grappig maar ook romantisch, een perfecte match voor de jongen en het meisje. Samen, gezellig dicht van elkaar met de popcorn tussen hun twee keken ze naar de film die voorbij vloog omdat ze het zo ontzettend leuk vonden samen. Na de film, aten het meisje en de jongen nog samen gezellig mcdonalds. De jongen at een groot bigmac menu, het meisje at een happy meal met chicken nuggies :). Met een volle buik gingen ze opnieuw met de mama van het jongentje naar huis, het huis van het jongentje om precies te zijn. Eenmaal thuis spendeerden de twee de rest van de avond in het bedje van de jongen, ze knuffelden elkaar voor de rest van de avond, vertelden elkaar hoeveel ze van elkaar hielden, gaven elkaar ontelbaar veel kusjes en beseften dat ze samen het gelukkigste koppeltje ooit waren tot er iemand van de twee in slaap viel. Het meisje was de eerste, het jongentje bleef haar nog even knuffelen en kusjes geven tot hij zelf ook in slaap viel, met het meisje in zijn armen. Ze sliepen als de gelukkigste roosjes van de romantiekwinkel en in de ochtend moest het meisje alweer naar huis. Ze hadden de mooiste dag ooit beleefd samen. Ze leefden nog lang, en gelukkig. Slaapwel Frojie ❤️ xxx'
+            },
+            story4: {
+                title: 'Vrijdagavond',
+                content: 'Er was eens een jongen en er was eens een meisje. Op een doodnormale vrijdagavond, gingen ze beiden naar kph, om hun favoriete instrument te gaan spelen. Het was de periode net voor de kerstvakantie. De jongen had stiekem gevoelens voor het meisje, ookal besefte hij dat toen zelf misschien nog niet zo heel goed. Tijdens Precilia keek de jongen af en toe vol liefde en vrolijkheid naar het meisje, maar ook dat besefte hij toen soms niet. Hij praatte veel met het meisje, hij dacht sinds de start herfstvakantie eigenlijk alleen maar aan dat éne meisje, maar ook dat, besefte hij toen nog niet zo goed. Op een dag, was er een feest georganiseerd door kph, genaamd het Ceciliafeest. De jongen en het meisje waren beiden van de partij, nadat ze al een hele tijd constant met elkaar stuurden. Vanaf de jongen het meisje zag die avond, bevroor hij even van haar schoonheid. Hij had nog nooit zon mooi meisje gezien in zn hele leven. Later die avond, vroeg de jongen aan het meisje om samen te dansen, het meisje aarzelde even, maar zei toch "ja!". Samen dansten ze erop los en toen, schoot het de jongen ineens allemaal te binnen. Hij besefte in 1 keer hoe belangrijk ze wel niet voor hem was en de jongen had besloten dat hij nooit meer aan iemand anders wou denken, of met iemand anders door het leven wou gaan, als liefjes. 1 week later waren ze het gelukkigste koppeltje ter wereld. Einde ❤️'
+            },
+            story6: {
+                title: 'Liefjes',
+                content: 'Er was eens een jongen en er was eens een meisje. De jongen en het meisje waren al een hele tijd ontzettend gelukkig omdat ze beiden hun leven met elkaar mochten en konden doorbrengen als liefjes. Ze waren onafscheidelijk, zelfs al waren ze nog geen 5 minuten geleden samen aan het knuffelen, ze mistten elkaar al vanaf ze niet meer in elkaars armen waren. Zo veel houden ze van elkaar. Op een middag hadden ze het leuke idee om samen te gaan zwemmen. Het meisje fietst naar de jongen zijn huis en samen gaan ze naar het zwembad. Eenmaal bij het zwembad, trekken ze hun zwemkleren aan en gaan ze samen het zwembad binnen. Eerst moest de jongen nog een snelle pipipauze doen en daarna gingen ze eerst onder de douches voor ze het water ingingen. Onder de douche ging de jongen bij het meisje staan om haar te plagen en te kietelen, het meisje probeerde zn handjes vast te nemen maar dat mislukte. Na het kietelfeestje duwde het meisje de jongen in het water, daar kon de jongen niet mee lachen dus hij sprong het water uit, nam haar stevig vast en sprong met haar mee het water in. Ze speelden met de bal, gingen in de wildwaterbaan, het golvenbad en natuurlijk ook van de glijbaan. Eerst gingen ze handje in handje 🥰, daarna zat het meisje tussen de jongen zn benen en daarna deden ze een wedstrijdje om ter snelst beneden. Vervolgens wou de jongen eventjes in het stoombad gaan zitten voor de lol, maar na 2 minuten wou hij er alweer uit omdat het te warm was 🫠. Toen gingen ze maar in het bubbelbad zitten en begon het kietelgevecht opnieuw.. oeps 🙃. Ze hadden de tijd van hun leven samen en waren het gelukkigste koppeltje van planeet aarde 🥰. Daarna was het al donker dus de jongen fietste nog eventjes mee naar het huis van het meisje, waar ze nog de allergrootste knuffel ooit aan elkaar gaven voor het jongentje terug naar zn huisje ging 🫂🤗. Eindeeee'
+            }
+            ,
+            story7: {
+                title: 'Mijn geluk',
+                content: "Er was eens een jongen en er was eens een meisje. Froje, ik ben zooooo blij dat ik elke avond deze verhaaltjes voor jou mag maken en zo ervoor kan helpen zorgen dat je een betere nachtrust hebt ❤️. Ik weet dat je al slaapt, maar ik moet dit nog eventjes zeggen. Zonder jou was ik echt nergens op dit moment, ik was een eenzame jongen die zich alleen focuste op school en verder geen doel had in het  leven. Je hebt me door zo veel moeilijke momenten heen getrokken, met mn examens, plaatsen waar ik naartoe moest om te praten of waar ik niet wou zijn, moeilijke momenten en ook angstaanvallen. Toen we begonnen praten met elkaar had ik nooit kunnen denken dat je ooit het belangrijkste deel van mijn leven zou worden. Ik heb dit nooit gezegd, maar jij bent sinds ik je ken de enige persoon die naar mijn gevoel echt naar mij luistert en mij kan begrijpen en helpen. Ik ben altijd maar meer en meer van je beginnen houden en ik zal je altijd dankbaar zijn voor wat je voor mij gedaan hebt ❤️. Woorden gaan nooit kunnen beschrijven hoe gelukkig ik me voel met jou, alleen maar de tranen die over mn wangen rollen als ik aan jou denk in mijn bedje s'avonds kunnen dat :) . Ik hou van je ❤️"
+            }
+            ,
+            story8: {
+                title: 'Beste meisje ooit',
+                content: 'Liefste Froje, sinds 24 november 2024 mag ik mijzelf de gelukkigste jongen van de hele wereld noemen door jou. Dit jaar was een hele rollercoaster voor mij, met betere en slechtere momentjes, maar de laatste maanden waren de beste paar maanden van het hele jaar en mss wel van mijn hele leven. Ik zal nooit kunnen beschrijven hoe gelukkig ik me voel met jou en hoe blij ik ben dat ik samen met jou 2025 in mag gaan. We hebben al zo veel leuke momenten meegemaakt samen, momenten die ik nooit meer zal vergeten en waar ik altijd enorm dankbaar voor zal zijn dat ik ze heb mogen meemaken met jou. Natuurlijk hebben we ook al slechtere momentjes meegemaakt, maar ook dan waren we er voor elkaar om elkaar te steunen, een knuffel te geven en elkaar te helpen. 24 november was de speciaalste dag van 2024 voor mij, ik denk dat het ook de meest stresserende dag was van 2024 :p (op de goeie manier natuurlijk 🙃😉). Ik wil ook efjes zeggen dat ik enorm enorm trots ben op jou, je hebt het echt niet makkelijk gehad de laatste maanden maar toch heb je doorgezet en ben je er nóg sterker uitgekomen. Je bent HET sterkste meisje dat ik ken!! (en het mooiste :)) Neem de goeie dingen mee in het nieuwe jaar, wordt sterker van de slechtere dingetjes en laat de slechte herrinerringen ervan in 2024 liggen 🙃. Als laatste wil ik nog eventjes zeggen dat je echt meer zelfvertrouwen mag hebben en dat je totaal niet onzeker moet zijn over jezelf!!! Je bent perfect op de manier dat je bent, je bent prachtig, lief, behulpzaam, enorm mooi en eigenlijk gewoon een schatje 😊❤️. Happy new yearrr!! Ik mis jeeee en ik hou van jeeeee'
+            }
+            ,
+            story9: {
+                title: 'Allerliefste Froje',
+                content: 'Er was eens een jongen en een meisje, maar dat laat ik nog eventjes voor morgen 🙃.  Allerliefste Froje, morgen krijg je weer slaapverhaaltje maar vandaag wil ik nog efjes iets anders heeeel belangrijks zeggen. Vandaag had ik efjes een mindere dag, mijn buikje deee pijn, ik was een beetje bang en ik was ook een beetje moe. Toch was ik vandaag ook heeeel blij, ik ben elke dag blij, elke ochtend als ik opsta en van zoveel geluk mag spreken dat jij mij een berichtje hebt gestuurd, elke middag en elke avond. Altijd als ik een minder momentje heb kijk ik efjes op mn gsm, zie ik mijn achtergrond en ben ik direct weer helemaal happy door jouw mooie hoofdje te zien en te beseffen dat ik de gelukkigste jongen ben van de hele aardbol samen met jou. Als je mij in september had gevraagd hoe mijn leven er nu zou uitzien zou ik gezegd hebben, "leren en studeren, depressief leven en ongelukkig zijn". Maar enkel en alleen maar door jou, is heel mn leven veranderd en heb ik ineens terug geluk en hoop gevonden. Het spijt me als ik het soms moeilijk heb met het te tonen, maar je bent echt DE belangrijkste persoon in mijn leven Froje, ik hou enorm enorm enorm veel van jou, ik zal je altijd dankbaar zijn voor alles wat je voor mij gedaan hebt en ik wil je NOOOIT meer kwijt ❤️. Nooit ga ik kunnen beschrijven hoe ik me soms voel als ik savonds in mijn bedje besef hoe gelukkig ik ben met jou, zelfs mn traantjes kunnen het niet. Nog 1 dingetje, het breekt me echt volledig om jou te horen zeggen dat je jezelf lelijk vind, efjes heel serieus, je bent oprecht heel, heel fkn mooi en je mag echt blij zijn met hoe je eruit ziet Froje, je bent echt perfect op de manier dat je bent. Vergeet dat nooit!! Als allerlaatste, ik mis je echt heeeel heeeeeeell veel dus als je snel nog eens zou kunnen afsprekennnn zou wel fijn zijn 🙃🫠🫂'
+            }
+            ,
+            story10: {
+                title: 'Trampolinepret',
+                content: 'Er was eens een jongentje en er was eens een meisje, het jongentje en het meisje waren al een tijdje het gelukkigste koppeltje van de wereld samen. Op een dag, waren ze aan het sturen met elkaar, net zoals ze elke dag deden, want ze konden nog geen halve dag zonder elkaar. De jongen stuurde een foto van een trampoline, gewoon voor de lol, tot hij ineens op het idee kwam om samen naar een trampoline park te gaan. Ze spraken af, kochten treintickets naar Kortrijk en sprongen de trein op. Na de treinrit kwamen ze aan op het station in Kortrijk, voor ze naar het trampoline park vertrokken, gingen ze eerst nog eventjes langs bij de kruidvat, want ze hadden een hongertje. De jongen kocht een zakje snoepjes en chocolade voor het meisje en een pakje nutella koekjes voor hemzelf. Nadat ze lekker gesmikkeld hadden en het meisje ook de helft van de jongen zijn nutella koekjes opgegeten had, waren ze eindelijk in het trampolinepark aangekomen. Ze hadden de tijd van hun leven samen, ze maakten domme saltos, de jongen duwde het meisje in het blokkenbad, ze deden wedstrijdjes om ter snelst naar de overkant van het park en voor ze het wisten was de springtijd voorbij. Nadat ze samen lekker gesprongen hadden en veel plezier gemaakt hadden gingen ze samen terug naar het huis van de jongen, waar het meisje een verassing had voor de jongen: 💫🥰EEN PANDATATTOO🥰💫 de jongen, die enorm veel van pandas en zijn liefje houd, kon zijn oogjes niet geloven. De pandas op de tattoo waren te schattig!! Het meisje zette de tattoo op de jongen zn arm en hij was er heeeel erg blij mee en hij  was het meisje ontzettend dankbaar. Daarna deden ze een wedstrijdje armpje drukken, waar de jongen met veel ongeluk zeer toevallig een kramp kreeg in zijn arm, waardoor hij verloor. Ze gingen in het bedje van de jongen liggen en keken de mooiste film samen terwijl het jongentje vol ongeloof en ontelbaar veel vlindertjes in zn buikje knuffels en kusjes geeft aan het mooiste meisje van alle werelden, die in zijn armen ligt. Einde 🥰😊'
+            }
+            ,
+            story11: {
+                title: 'Verassing',
+                content: 'Er was eens een dag, in het afgelegen stadje Poperinge, waar een jongentje en een meisje verliefd werden op elkaar. Ze hielden stiekem al een tijdje ontzettend veel van elkaar, maar vol onzekerheid durfden ze het maar niet tegen elkaar zeggen, zelfs niet op het moment dat ze hun liefdesverklaringswandelingetje deden, tot de jongen zijn gevoelens niet meer kon inhouden en het eindelijk aanvroeg met het meisje, met traantjes in zijn ogen van geluk. Nadat ze al een paar maandjes verder, nogsteeds het gelukkigste koppeltje van de wereld waren, besloten ze om eens af te spreken met elkaar bij het jongentje thuis. De jongen had namelijk een 💫❤️verrassing❤️💫 voor het meisje 👀. Toen het meisje vol nieuwschierigheid aankwam wou ze de verrassing liefst niet aannemen, want ze houd niet echt van verrassingen 🙃. Nadat de jongen haar toch overtuigde om de verrassing aan te nemen en ze het opende, kon ze haar prachtige oogjes niet geloven. Ze was zo blij met haar verrassing dat ze zelfs een traantje moest wegpinken 😊. Ze gingen dolgelukkig samen in de jongen zijn bedje gaan liggen en gaven elkaar knuffels en kusjes tot de volgende ochtend. Toen ze wakker werden in elkaars armen, wou de jongen helemaal niet dat het meisje al naar huis ging. Liefst van al zou hij voor eeuwig en altijd in haar armen blijven liggen 🥰❤️. Eindeee 😊'
+            }
+            ,
+            story12: {
+                title: 'Mooiste meisje',
+                content: 'Er was eens een jongentje en er was eens een meisje, ze waren al een tijdje zo gelukkig samen, ze hadden beide moeite met hun gevoelens voor elkaar te beschrijven. Elke keer als het jongentje het meisje ziet, moet hij zijn gevoelens hevig onderdrukken omdat hij zijn Frojie zo graag ziet. Hij vindt het enorm moeilijk om eerlijk te zijn tegen haar over hoe hij naar haar kijkt, maar, op een dag, lukte hem dat toch een beetje. Hij vertelde haar hoe perfect ze wel niet is volgens hem, van top tot teen, van binnen tot buiten. Ookal had hij haar lichaam nog nooit volledig gezien, dat maakte de jongen helemaal NIETS uit. Hij wist hoe de belangrijkste delen voor hem eruit zagen. Haar prachtige hoofdje en haar binnenkant. De rest vulde het jongentje soms nog eens aan met zijn verbeelding savonds in zijn bedje om het meisje nog eens volledig te bewonderen, maar elke keer als hij dit doet, moet hij meestal ook een beetje wenen, omdat het meisje zo perfect is in zijn ogen, van binnen tot buiten, van kop tot teen. De dag dat hij dit eindelijk durfde vertellen tegen haar was de dag dat er een pakje van zijn schouders viel, eindelijk had hij weer een beetje beter kunnen beschrijven wat hij voor haar voelde. Het meisje was trots op de jongen dat hij het durfde om eerlijk te zijn over zijn gevoelens voor haar en was enorm blij over hoe hij over haar denkt. Einde 😊❤️'
+            }
+            ,
+            story13: {
+                title: 'Smoorverliefd',
+                content: 'Er was eens een jongentje en een meisje, ze waren al een heeele tijd smoorrverliefd op elkaar, maar dat ze echt een koppeltje vormden, dat was nog maar een tijdje. Op een dag, in het weekend, besloten ze om af te spreken bij het huis van het jongentje, ze waren alleen thuis, want de jongen zijn ouders en zusje waren gaan winkelen in Kortrijk. Toen het meisje aankwam bij de jongen, gaven ze elkaar eerst de groootste warmste knuffel ooittt. Daarna gingen ze naar de keuken en besloten ze om samen een peppa big taart te bakken. Na een paar pogingen en bijna een telefoontje naar de brandweer, hadden ze hun peppa big taart afgemaakt. Het meisje nam de taart en duwde het vol plezier in het gezicht van de jongen. De jongen vond het best wel grappig, maar vond het wel jammer dat zijn peppa big taart nu kapot was. Ze aten nog een paar stukjes van de kapotte taart en daarna gingen ze samen in het bedje van de jongen liggen. Eerst knuffelden ze 5 minuutjes zonder los te laten en vertelden ze elkaar hoeveel ze van elkaar houden. Na de uitbraak van een kietelgevecht besloten ze dan om een film te kijken. Een 💫🌈disneyfilm🌈💫. Tijdens de film gaf de jongen kusjes aan het meisje terwijl hij speelde met haar haartjes. Na de film, moest het meisje eigenlijk naar huis, maar ze besloot om die nacht het jongentje in zijn armen te blijven, omdat ze niet zonder elkaar kunnen. Eindeee 😊❤️'
+            }
+            ,
+            story14: {
+                title: 'Froje',
+                content: "Er was eens een jongentje dat smooorverliefd was op een meisje. Haar naam is Froje, maar hij noemt haar liever Frojie, die naam vindt hij beter passen omdat ze zooooo lief en mooi is 🙃😊. Elke dag als de jongen wakker wordt, is het eerste wat hij doet zijn gsm vastnemen en kijken hoe laat het is, maar, voor hij dat ziet, bewondert hij eerst nog een tijdje zijn achtergrond waar zijn liefste Frojie opstaat, waardoor hij meteen een grote glimlach op zijn gezicht krijgt en direct weer de gelukkigste jongen van heeeel de wereld is. Het eerste wat de jongen daarna doet is goeiemorgen sturen naar de belangrijkste persoon in zijn leven, die toevallig ook het mooiste meisje ooit is 👀😊. Overdag stuurt de jongen de dingen waar hij zich mee bezig houdt door naar het meisje, soms in filmpjes, soms in berichtjes en ook in snapies. Er gaat geen minuut voorbij zonder dat de jongen aan haar denkt, zo veel houdt hij van haar. Hij mist haar ook altijd enorm veel, ookal heeft hij haar diezelfde dag nog gezien, hij mist haar, altijd en overal. S'avonds als de jongen in zijn bedje ligt, stuurt hij nog een lange tijd berichtjes met haar, wat zijn lievelingsbezighouding is 🥰. Nadat ze stoppen met sturen en gaan slapen probeert de jongen haar nog duidelijk te maken hoeveel hij echt van haar houdt, maar dat is hem tot nu toe nog niet volledig gelukt. Voor hij echt slaapt denkt hij nog eventjes aan haar, zijn aaaallerliefste Frojie, hoe mooi ze wel niet is, hoe lief ze wel niet is. Daarna gaat de jongen naar dromenland en droomt hij over haar 🙃😊. Eindeeee ❤️"
+            }
+            ,
+            story15: {
+                title: 'Ik mis Froje',
+                content: 'Er was eens een jongentje en een heel mooi meisje, ze waren enooorm verliefd op elkaar en ze willen elkaar nooooit meer kwijt. Ze hebben elkaar al 2 weken niet meer gezien, maar vandaag, is het eindelijk de dag, dat ze elkaar nog eens zien in de muziekschool. Het jongentje kan niet wachten tot hij naar de muziekschool mag, hij zit al elke dag, elk uur en elke minuut van de afgelopen 2 weken te verlangen naar het moment dat hij zijn allermooiste, allerliefste, allerbeste en allersterkste Frojie nog eens ziet en haar kan vastpakken 🙃😊. Eindelijk is het zover, het jongentje loopt de muziekschool binnen, gaat de trap naar omhoog, doet de deur open en.. daar zit ze dan. Hier had hij 2 weken elke seconde naar verlangd. Hij zet alles op de grond, sprint naar haar toe en geeft haar de allergrootste langste meest liefdevolle knuffel ooooitttt. Daarna praten ze nog een beetje en dan vertrekken ze vol geluk naar hun les. Wie weet zien ze elkaar snel weer... mss diezelfde dag nog? 👀👀❤️'
+            }
+            ,
+            story16: {
+                title: 'Dag in Silas zn bedje',
+                content: 'Er was eens een verlegen jongentje en er was eens een heel mooi meisje, ze waren al een tijdje een heel gelukkig koppeltje en ze hadden samen besloten om morgen eens af te spreken bij het jongentje thuis. De avond ervoor, nadat de jongen slaapwel stuurde naar zijn liefste Frojie en moest slapen, lag hij klaarwakker in zijn bedje. Hij kon maar niet stoppen met denken aan dat ene hele speciale momentje van morgen en hij kreeg er spontaan kietels in zn buikje van. De volgende dag was het zo ver. Voor het meisje kon aanbellen deed het jongentje de deur al open en vloog in haar armen, voor ze naar binnen gingen, deed de jongen vlug zijn jas aan en ging hij weer naar buiten, waar het meisje klaarstond om hem met sneeuwballen te bekogelen 🙃. Na de sneeuwpartij gingen ze weer naar binnen en besloten ze om samen in de zetel eventjes domme filmpjes van elkaar te kijken en lol te hebben. Daarna, nam de jongen de bak met stiften en potloden, bracht de bak naar zn kamer, pakte het meisje op, gooide haar in zijn bedje, sprong erop en daar lagen ze dan. "Ga je gang 😊" zei de jongen (intussen zonder t-shirt). Het meisje, dat bij het jongentje in bedje lag, begon de jongen in te kleuren. Toen ze aan zn buikje begon kreeg hij enorm last van kietels en begon hij te lachen, waarna het meisje hem alleen maar meer begon te kietelen. Na de kietelpartij, kijkt de jongen het meisje aan. Recht in de ogen. Zijn hartje gaat zo snel, zijn vlindertjes slaan zo tilt dat ze bijna uit zn buikje vliegen en voor hij het besefte had hij het gedaan. Een kusje op Frojie haar mondje, zijn eerste kus 🙃. En ze leefden nog laaang en gelukkiggg 😊😊'
+            }
+            ,
+            story17: {
+                title: 'Meant to be',
+                content: 'Er was eens een groot jongentje en een meisje. Het jongentje was zoooo verliefd op het meisje, het meisje hield ook zoooooo veel van het jongentje, ze waren ❤️💫meant to be💫❤️. Op een dag besloten ze om nog eens af te spreken, de ze missten elkaar zooooo hard, ze hadden beiden nood aan de grootste en langste knuffel ooitttt. Na vele nachten dromen erover, was de dag dan eindelijk daar. Het jongentje doet zijn jas en muts aan en vertrekt richting de bib. Toen hij aankwam was het meisje nergens te bespeuren, hij keek toen nog wat rond en plots, zag hij het mooiste meisje ooit op zich afkomen vanuit de verte. De jongen trekt zich vlug nog eventjes terug om het katje te zoeken en komt dan tevoorschijn om te vragen waar het katje is 🙃. Het meisje loopt op de jongen af, ze geven elkaar de grootste knuffel ooit, vertelden elkaar hoeveel ze elkaar hebben gemist en vertrekken naar het jongentje zn huis. Toen ze thuiskwamen toonde het jongentje eerst wat domme jontensdingetjes op zn computer, terwijl hij vanbinnen helemaal happy en over the moon was door de squishies die hij gekregen had 👀. Op een punt, trekt het meisje de jongen weg van zn bureau, pakken ze wat stiftjes en een balpen en gaan ze richting de jongen zn kamer. Daar tekende ze een panda op zn rugje, een groot hartje op zn buikje en werd ze eventjes heel rood toen de jongen zn tshirt uitdeed en haar knuffelde. De jongen vond het zo leuk, hij kon het niet beschrijven en wou dat het nooit eindigde, op een moment, toen hij haar in zn armen had en haar nooit meer wou loslaten en de gelukkigste jongen van alle wereldek was, sloegen de vlindertjes in zijn buikje weer helemaal tilt en slaagde de jongen er in om het meisje een kusje op haar mondje te geven. Ze hadden de beste tijd ooit samen. Eindeeee 😊😊'
+            }
+            ,
+            story18: {
+                title: 'Frojie en Silasje',
+                content: 'Er was eens een jongentje en een meisje, maar deze keer, is het Frojie en Silasje. Frojie en Silasje waren al een tijdje het gelukkigste koppeltje ooit, ze hebben al veel meegemaakt samen, leuke, liefdevolle momentjes die ze nooit meer zullen vergeten en ze voor altijd zullen herrinerren, maar ook mindere momentjes waar ze elkaar overal doorheen steunden. Op een avond, leefden ze in hun droom: ze lagen samen in een bedje, om 23 in de avond, in elkaars armen. Hun allereerste ❤️💫💭sleepover💭💫❤️ samen. Ze hadden al een hele leuke dag erop zitten, ze waren al naar de winkel geweest, hebben samen gekookt, geknuffeld, roblox gespeeld en een gezellige film gekeken (Silasje was in slaap gevallen 🙃). Daar lagen ze dan, om 23u in de avond, in elkaars armen. Dit was hun droom. Maar voor ze gingen slapen, had Silasje nog een leuk ideetje. Zoals hij elke avond deed, maakte hij een slaapverhaaltje, maar deze keer, kon hij het in het echt tegen zijn Frojie vertellen. Hij vertelde het verhaaltje, Frojie werd een beetje rood en dook onder de lakens, ze gaven elkaar een slaapwel kusje en gingen in elkaars armen samen naar dromenland. Dit. Is. Mijn. Droooommm!!! Gisteren was de beste dag van mijn leven die voor mij nogsteeds een beetje als een droom lijkt. Ik zal je altijd dankbaar zijn om in mijn leven te komen en ik zal voor altijd van je houden 🥰❤️❤️'
+            }
+            ,
+            story19: {
+                title: 'Zijn Frojie, zijn alles',
+                content: "Er was eens een jongentje en er was eens een meisje genaamd ✨️Froje✨️. Het jongentje was smoooooorverliefd op Froje, Froje was DE liefde van zijn leven. Hij noemde haar vaak Frojie, zijn Frojie (zijn alles) omdat hij dat schattiger en liever vind (net zoals Frojie zelf 😊). Op een dag deden ze samen gezellig een wandelingetje door het bos, ze gingen eerst willempje, het hondje van Froje meenemen, maar die bleef toch liever in zijn warme huisje. In het bos, praat het koppeltje over dingetjes die ze willen hebben of doen in hun latere leven, zoals hun droomhuis beschrijven, welke auto ze elkaar in zien rijden, of ze miniversies van hen willen, dat soort dingetjes 😊. Op een gegeven punt pakte het jongentje Frojie haar handje vast, draaide zich naar haar toe en gaf haar een kusje. Daarna liepen ze samen, handje in handje verder. Toen ze klaar waren met hun wandeling hadden ze het geweldigleuke idee om die avond, samen, de leukste avond ooit te hebben en ✨️een sleepover✨️ te doen. Het meisje nam haar spullen, ging naar het huis van de jongen en daar waaren ze dan. Het was al best laat, dus eerst besloten ze om samen pasta te koken. Het jongentje, Frojie's Silasje, is een best slechte kok ookal moest hij alleen maar de saus verwarmen en Frojie lachte hem stiekem een beetje uit. Ze aten samen en besloten om daarna een schuimfeestje te gooiennn 🕺🕺🕺🥳🥳🥳. Ze trokken hun badkleertjes aan, vulden het bad, deden alle bruisballen en zeepjes dat ze konden vinden erin en maakten één groot schuimfeestje. Na het schuimfeestje waren ze best moe, ze deden hun pyjamas aan, kropen samen in bedje en keken nog een film, maar Frojie viel in slaap. Silasje nam haar nog dichter in zijn armen, aaide haar hoofdje en gaf haar kusjes en knuffels tot zn film gedaan was en erna ook nog. Toen ze eindelijk allebei vredig sliepen in elkaars armen, was het tijd om over elkaar te gaan dromen 💭😴. Ze leefden nog lang en gelukkiggg 😊😊😊"
+            }
+            ,
+            story20: {
+                title: 'Ik hou van Froje',
+                content: 'Er was eens een jongentje, zijn naam was Silas. Silas was smoooorsmoorverliefd op een heel mooi meisje, haar naam is Froje, maar hij noemt haar Frojie, zijn Frojie 🙃😊. Frojie betekent alles voor Silas, zij is het eerste waar hij aan denkt als hij opstaat, als hij gaat slapen, als hij slaapt en alle momenten ertussen. Silas vindt Froje het mooiste meisje dat hij ooit gezien heeft. In zijn ogen, is niemand op deze wereld mooier dan haar, niet vanbinnen, niet vanbuiten. Soms mist hij Froje wel heel veel, dan gaat hij even op zijn bedje liggen en neemt hij zijn bandje die hij van haar kreeg, wat trouwens zijn meest waardevolle bezitting is, heeeeel stevig vast in zijn beide handjes. Soms moet hij dan ook een beetje wenen, maar dat is helemaal oke :). Als Silas Frojie ziet in het echt, slaat zijn hartje telkens een stukje sneller en gaan de vlindertjes in zijn buikje helemaal ieieiieie, hij kan er niets aan doen, het gebeurt gewoon, maar hij vindt het het beste gevoel OOIT. Als ze samen zijn, in het echt en Froje niet naar Silas kijkt, kijkt hij stiekem, soms minder stiekem, naar zijn Frojie om haar te bewonderen. Hoe mooi ze wel niet is en hoe hij ooit het geluk had om met het mooiste meisje ooit samen te mogen zijn. Ze is perfect in zijn ogen, op alle vlakken, haar hoofdje is zo mooi dat Silasje wil smelten, haar buikje en rugje zijn de defenitie van perfectie en haar privedeeltjes laten zijn vlindertjes bijna uit zijn buikje vliegen van perfectie en mooiheid. Stiekem droomt Silasje ervan om ooit samen met Frojie te mogen slapen en heel de nacht met haar haartjes te mogen spelen, om haar rugje te krabben, haar kusjes te geven op haar hoofdje en in slaap te mogen vallen met het mooiste meisje van de wereld op hem 🙃🤭. Goeiemorgen Froje 🙃❤️☀️'
+            }
+            ,
+            story21: {
+                title: 'Knuffeltjes',
+                content: 'Er was eens een verlegen jongentje, die ontzettend veel (écht heel, heel veel) hield van een meisje, zijn meisje, Frojie. Het jongentje doet alles voor haar en zou alles doen voor haar, want zij is ook alles voor hem, Frojie is de belangrijkste persoon in het jongentje zijn leven, Silasje zijn leven. Zonder haar, zijn grootste supporter, stond hij nu nergens en hij is haar eeuwig dankbaar voor alles wat ze voor hem heeft gedaan en hij vraagt zich nogsteeds af hoe hij ooit zo veel geluk gehad heeft om met haar te kunnen samen zijn, want ze is niet zo maar iemand. Froje is HET mooiste meisje dat Silasje ooit heeft gezien en hij vindt haar elke dag maar mooier en mooier en hij wordt telkens meer en meer verliefd op haar. Froje is HET enige meisje dat Silasje wilt, nu, morgen en voor altijd. Liefst zou hij nu met zijn Frojie in zijn bedje liggen, zodat hij met haar haartjes kan spelen, over haar rugje kan wrijven, haar kusjes kan geven, haar mooiheid kan bewonderen, haar een slaapverhaaltje kan voorlezen en haar met 100% eerlijkheid kan vertellen hoe mooi ze wel niet is, van boven tot beneden, top tot teen, topje van haar hoofdje tot haar voetjes, hoe perfect ze wel niet is, op alle vlakken, hoe mooi haar buikje wel niet is, hoe mooi haar rugje wel niet is, hoe mooi haar gezichtje wel niet is, haar oogjes wel niet zijn en hoe mooi die andere dingetjes wel niet zijn 🙃🤭. Daarna gaan ze samen slapen, liefst van al met Frojie stevig vast op Silasje als dekentje voor elkaar 🥰❤️. Goeiemorgen Frojieeee ❤️☀️'
+            }
+            // Add more stories as needed
+        };
+
+        // Event Listener for Story Cards
+        storiesGrid.addEventListener('click', (e) => {
+            const storyCard = e.target.closest('.story-card');
+            if (storyCard) {
+                const storyKey = storyCard.getAttribute('data-story');
+                if (stories[storyKey]) {
+                    // Populate Modal with Story Data
+                    modalTitle.textContent = stories[storyKey].title;
+                    modalContent.innerHTML = `<p>${stories[storyKey].content}</p>`;
+                    
+                    // Show Modal
+                    storyModal.style.display = 'flex';
+                }
+            }
+        });
+
+        function generateStoryCards() {
+        const storiesGrid = document.getElementById('stories-grid');
+        
+        // Clear existing content if any
+        storiesGrid.innerHTML = '';
+        
+        // Iterate over the stories object
+        for (const [key, story] of Object.entries(stories)) {
+            // Create the story-card div
+            const storyCard = document.createElement('div');
+            storyCard.classList.add('story-card');
+            storyCard.setAttribute('data-story', key);
+            
+            // Create the decorative element (e.g., ✨)
+            const decorativeDiv = document.createElement('div');
+            decorativeDiv.textContent = '✨'; // You can change this to any decorative emoji or icon
+            
+            // Create the story-title div
+            const storyTitleDiv = document.createElement('div');
+            storyTitleDiv.classList.add('story-title');
+            storyTitleDiv.textContent = story.title;
+            
+            // Append decorative and title divs to the story-card
+            storyCard.appendChild(decorativeDiv);
+            storyCard.appendChild(storyTitleDiv);
+            
+            // Append the story-card to the stories-grid
+            storiesGrid.appendChild(storyCard);
+        }
+    }
+
+    // Call the function to generate story cards on page load
+    document.addEventListener('DOMContentLoaded', generateStoryCards);
+
+        // Close Modal Function
+        function closeModal() {
+            storyModal.style.display = 'none';
+        }
+
+        // Close Modal on Button Click
+        closeModalBtn.addEventListener('click', closeModal);
+
+        // Close Modal on Outside Click
+        window.addEventListener('click', (e) => {
+            if (e.target === storyModal) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
