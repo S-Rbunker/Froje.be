@@ -197,8 +197,14 @@ async function laadSamenvattingen(vak) {
         // rechtstreeks iframe gebruiken zonder fetch
         document.getElementById('docTitle').innerText = `✨ ${titel} ✨`;
         document.getElementById('summaryContent').innerHTML = `
-  <iframe src="${link}" style="width:80%; height:90%; border-radius:20px; background-color:#ffe4e1; box-shadow:0 10px 25px rgba(255, 105, 180, 0.4);" frameborder="0"></iframe>
-`;
+        <div class="w-full h-full flex justify-center items-center">
+            <iframe src="${link}" 
+            class="rounded-2xl shadow-lg border-0" 
+            style="width: 80%; height: 90%; background-color: #ffe4e1;" 
+            frameborder="0">
+            </iframe>
+        </div>
+        `;
         openModal('contentModal');
       };
       list.appendChild(card);
