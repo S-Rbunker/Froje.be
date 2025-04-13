@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🌸 Froje Studiedashboard 🌸</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="/Rbunker music logo youtube.ico">
   <style>
     body {
-      font-family: 'Comic Sans', sans-serif;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
       background: linear-gradient(135deg, #ffc0cb, #ffe4e1);
       display: flex;
       flex-direction: column;
-    }
-    html, body {
-        height: 100%;
+      min-height: 100vh;
     }
     .fade {
       animation: fadeIn 0.6s ease-in-out;
@@ -22,9 +21,65 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    .subject-card {
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .subject-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(255, 105, 180, 0.4);
+    }
+    .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    z-index: 50;
+  }
+  #summaryContent {
+    display: flex;
+    justify-content: center; /* horizontaal centreren */
+    align-items: center; /* verticaal centreren (optioneel) */
+    width: 100%;
+    height: 100%;
+    background-color: #ffe4e1; /* de gewenste achtergrondkleur */
+}
+#summaryContent iframe {
+    flex: none;
+    width: 100%; /* of gewenste breedte */
+    height: 100%; /* of gewenste hoogte */
+    border: none;
+    background-color: #ffe4e1 !important;
+    border-radius: 20px; /* afgeronde hoeken, optioneel */
+}
+    .modal.modal-open {
+        display: flex;
+    }
+    .modal-content {
+    height: 100vh;
+    width: 100vw;
+    max-height: none;
+    max-width: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff0f5;
+  }
+  #docTitle {
+    padding: 1rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #d63384;
+    text-align: center;
+  }
   </style>
 </head>
-<body>
+<body class="text-gray-800">
+
 <!-- LOGIN -->
 <div id="login" class="flex items-center justify-center min-h-screen px-4">
   <div class="bg-white rounded-xl p-10 shadow-lg text-center max-w-2xl w-full">
@@ -42,137 +97,53 @@
 <!-- DASHBOARD -->
 <div id="dashboard" class="container mx-auto px-4 py-8 fade" style="display:none">
   <h1 class="text-5xl font-bold text-pink-600 text-center mb-10">📚 Frojie haar studeerwereldje 📚</h1>
-  <div class="flex justify-center">
-    <button onclick="document.getElementById('summaryCard').style.display='block'; this.style.display='none'; window.scrollTo({top: document.getElementById('summaryCard').offsetTop, behavior: 'smooth'});" class="bg-white p-6 rounded-2xl shadow-xl w-full md:w-1/2 text-left hover:scale-105 transition-all">
-      <h2 class="text-2xl font-semibold text-pink-500">✨ Stil...Gaan & HierBenIk ✨</h2>
-      <p class="mt-2 text-sm text-gray-600">Klik hier 🌈</p>
-    </button>
-  </div>
 
-  <div id="summaryCard" class="mt-12 p-8 bg-white rounded-3xl shadow-xl fade space-y-6" style="display:none">
-    <h2 class="text-3xl text-pink-600 font-bold">📘 Thema: #Stil...Gaan</h2>
+  <!-- VAKSELECTIE -->
+  <div id="subjectSelector" class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 fade">
+    <div class="col-span-full text-center text-3xl font-bold text-pink-700">📘 A-Vakken</div>
 
-    <div>
-      <h3 class="text-2xl font-semibold text-purple-500">👋 Het belang van groeten</h3>
-      <ul class="list-disc ml-5 text-gray-700">
-        <li>Groeten is de start van elke menselijke relatie.</li>
-        <li>Het creëert erkenning, vertrouwen en openheid.</li>
-        <li>Niet groeten kan leiden tot gevoelens van afwijzing of onzekerheid.</li>
-        <li>Een Chinese wijsheid zegt: “De groet is belangrijker dan les of verhaal.”</li>
-      </ul>
-    </div>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('nederlands')">📗 Nederlands</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('sociologie')">🧠 Sociologie</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('psychologie')">🌀 Psychologie</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('filosofie')">📜 Filosofie</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('wiskunde')">🧮 Wiskunde</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('kunstbeschouwing')">🎨 Kunstbeschouwing</button>
 
-    <div>
-      <h3 class="text-2xl font-semibold text-purple-500">🧠 Filosofie van Emmanuel Levinas</h3>
-      <ul class="list-disc ml-5 text-gray-700">
-        <li>De Ander roept ons op om verantwoordelijkheid op te nemen.</li>
-        <li>Het gelaat van de Ander raakt ons en vraagt om respect.</li>
-        <li>“Ont-moeten” betekent dat er geen verplichting is, enkel echte ontmoeting.</li>
-        <li>We kunnen de Ander nooit volledig begrijpen of bezitten – die blijft mysterievol.</li>
-      </ul>
-    </div>
+    <div class="col-span-full text-center text-3xl font-bold text-pink-700 mt-10">📗 B-Vakken</div>
 
-    <div>
-      <h3 class="text-2xl font-semibold text-purple-500">🚶 Mensen van de Weg</h3>
-      <ul class="list-disc ml-5 text-gray-700">
-        <li>Vroege christenen werden zo genoemd omdat ze altijd “onderweg” waren – letterlijk en figuurlijk.</li>
-        <li>Ze leefden in navolging van Jezus: actief in liefde, zorg en rechtvaardigheid.</li>
-        <li>Hun geloof werd zichtbaar in wat ze deden: helpen, spreken, liefhebben.</li>
-      </ul>
-    </div>
-
-    <div>
-      <h3 class="text-2xl font-semibold text-purple-500">🛑 Rustplaatsen onderweg</h3>
-      <ul class="list-disc ml-5 text-gray-700">
-        <li>Jezus trok zich regelmatig terug om te bidden en tot rust te komen.</li>
-        <li>Autobahn-kapelletjes en andere stille plaatsen zijn symbolen van innerlijke rust.</li>
-        <li>Stilte is nodig om jezelf te horen en tot inzicht te komen.</li>
-      </ul>
-    </div>
-
-    <div>
-      <h3 class="text-2xl font-semibold text-purple-500">🕍 Sabbat & Zondag</h3>
-      <ul class="list-disc ml-5 text-gray-700">
-        <li>Sabbat: Joodse rustdag van vrijdagavond tot zaterdagavond.</li>
-        <li>Zondag: voor christenen een dag van ontmoeting, eucharistie, bezinning en gemeenschap.</li>
-        <li>Beide dagen zijn bedoeld als pauzemoment, voor spiritueel herbronnen.</li>
-      </ul>
-    </div>
-
-    <div>
-      <h3 class="text-2xl font-semibold text-purple-500">🏡 Herberg als symbool</h3>
-      <ul class="list-disc ml-5 text-gray-700">
-        <li>Een herberg staat voor gastvrijheid: iemand verwelkomen, zorg bieden, ruimte geven.</li>
-        <li>Jezus waste de voeten van zijn leerlingen – een radicaal dienstbaar gebaar.</li>
-        <li>De moderne samenleving roept ook op tot gastvrijheid voor migranten en mensen in nood.</li>
-      </ul>
-    </div>
-
-    <h2 class="text-3xl text-pink-600 font-bold mt-10">💭 Thema: #HierBenIk</h2>
-
-    <div>
-      <h3 class="text-2xl font-semibold text-indigo-500">🎯 Keuzes maken</h3>
-      <ul class="list-disc ml-5 text-gray-700">
-        <li>We maken dagelijks keuzes – groot en klein – die ons leven vormen.</li>
-        <li>Wie we zijn, wordt mee bepaald door wat en hoe we kiezen.</li>
-        <li>Ouders, vrienden, geloof, school en media kunnen onze keuzes beïnvloeden.</li>
-      </ul>
-    </div>
-
-    <div>
-      <h3 class="text-2xl font-semibold text-indigo-500">❤️ De Barmhartige Samaritaan</h3>
-      <ul class="list-disc ml-5 text-gray-700">
-        <li>Bijbelverhaal waarin een man wordt geholpen door iemand van wie men het niet verwacht.</li>
-        <li>Toont dat naastenliefde geen grenzen kent – elke mens kan je naaste zijn.</li>
-        <li>Barmhartigheid vraagt actie, ook als het moeilijk of onverwacht is.</li>
-      </ul>
-    </div>
-
-    <div>
-      <h3 class="text-2xl font-semibold text-indigo-500">🔥 Roeping van Mozes</h3>
-      <ul class="list-disc ml-5 text-gray-700">
-        <li>God roept Mozes via een brandend braambos.</li>
-        <li>Mozes twijfelt en voelt zich ongeschikt, maar God blijft hem aanmoedigen.</li>
-        <li>Roeping betekent: zich geroepen voelen om iets goeds te doen, ondanks angst of twijfel.</li>
-      </ul>
-    </div>
-
-    <div>
-      <h3 class="text-2xl font-semibold text-indigo-500">🌺 Jeanne Devos</h3>
-      <ul class="list-disc ml-5 text-gray-700">
-        <li>Zij werd missionaris in India en zette zich in voor huisarbeidsters.</li>
-        <li>Voelde een innerlijke roeping om liefde te geven en gerechtigheid te zoeken.</li>
-        <li>Zij leefde in eenvoud, trouw aan haar droom en idealen.</li>
-      </ul>
-    </div>
-
-    <div>
-      <h3 class="text-2xl font-semibold text-indigo-900">🔑 Kernbegrippen</h3>
-      <ul class="list-disc ml-5 text-gray-700">
-        <li><strong>Ontmoeten:</strong> Vrij en respectvol contact tussen mensen.</li>
-        <li><strong>Appel:</strong> Innerlijke oproep tot actie of verantwoordelijkheid.</li>
-        <li><strong>Barmhartigheid:</strong> Je geraakt voelen door het lijden van een ander én iets doen.</li>
-        <li><strong>Naastenliefde:</strong> Zorg en betrokkenheid voor iedereen, ook wie anders is.</li>
-        <li><strong>Roeping:</strong> Gevoel dat je iets zinvols móet doen.</li>
-        <li><strong>Stilte:</strong> Moment van pauze, rust, bezinning – broodnodig.</li>
-        <li><strong>Gastvrijheid:</strong> Anderen welkom heten, zelfs als ze ‘anders’ zijn.</li>
-      </ul>
-    </div>
-
-    <div>
-      <h3 class="text-2xl font-semibold text-indigo-900">📌 Praktijkvoorbeelden</h3>
-      <ul class="list-disc ml-5 text-gray-700">
-        <li><strong>Barmhartige Samaritaan:</strong> Iemand helpen op straat die je niet kent.</li>
-        <li><strong>Jeanne Devos:</strong> Je inzetten voor onzichtbare groepen.</li>
-        <li><strong>Rustmomenten:</strong> Even pauze nemen van je gsm of schoolstress om te ademen.</li>
-        <li><strong>Gastvrijheid:</strong> Een klasgenoot die nieuw is welkom heten en begeleiden.</li>
-      </ul>
-    </div>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('aardrijkskunde')">🌍 Aardrijkskunde</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('engels')">🇬🇧 Engels</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('frans')">🇫🇷 Frans</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('geschiedenis')">🏰 Geschiedenis</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('biologie')">🧬 Biologie</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('fysica')">⚡ Fysica</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('chemie')">🧪 Chemie</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('godsdienst')">✝️ Godsdienst</button>
   </div>
 </div>
 
+<!-- MODALS -->
+<div id="summaryModal" class="modal hidden">
+    <div class="bg-pink-200 rounded-3xl p-8 modal-content w-full max-w-2xl relative">
+      <button onclick="closeModal('summaryModal')" class="absolute top-4 right-4 text-xl font-bold text-pink-500">✖</button>
+      <h2 class="text-center text-2xl font-bold text-pink-600 mb-6">✨ Kies een samenvatting ✨</h2>
+      <div id="summaryList" class="grid gap-4"></div>
+    </div>
+  </div>
+  
+  <div id="contentModal" class="modal hidden">
+    <div class="modal-content relative">
+      <button onclick="closeModal('contentModal')" class="absolute top-4 right-4 z-50 text-xl font-bold text-pink-500">✖</button>
+      <h3 id="docTitle" class="text-center text-2xl font-bold text-pink-700 py-4 bg-pink-100 z-10">✨ Samenvatting ✨</h3>
+      <div id="summaryContent" class="flex-1">
+        <iframe id="summaryIframe" class="w-full h-full border-0" frameborder="0" style="background-color: #ffe4e1 !important;"></iframe>
+    </div>
+    </div>
+  </div>
+
+<!-- FOOTER -->
 <footer class="mt-auto pb-4 text-pink-600 text-center text-sm">
-    © Met véél liefde gemaakt door Silasje voor Frojie 💖
+  © Met véél liefde gemaakt door Silasje voor Frojie 💖
 </footer>
 
 <script>
@@ -187,6 +158,55 @@
       setTimeout(() => error.classList.add('hidden'), 3000);
     }
   }
+
+  function closeModal(id) {
+  const modal = document.getElementById(id);
+  modal.classList.add('hidden');
+  modal.classList.remove('modal-open');
+}
+
+  function openModal(id) {
+  const modal = document.getElementById(id);
+  modal.classList.remove('hidden');
+  modal.classList.add('modal-open');
+}
+
+async function laadSamenvattingen(vak) {
+    const apiURL = "https://script.google.com/macros/s/AKfycbxIysg_We_EwYDM7gON32la6hevsNJdtCetHc8uJ-AdFAFSllAYSRinzWE-tLQVS_9-3A/exec?vak=" + vak.toLowerCase();
+
+    try {
+    const response = await fetch(apiURL);
+    const data = await response.json();
+    console.log("Reactie van server ontvangen:", data);
+
+    const list = document.getElementById('summaryList');
+    list.innerHTML = '';
+    openModal('summaryModal');
+
+    data.forEach(doc => {
+      const parts = doc.titel.split('|');
+      const titel = parts[0]?.trim() || 'Onbekend';
+      const link = parts[1]?.trim();
+
+      if (!link) return; // skip als geen geldige link
+
+      const card = document.createElement('button');
+      card.className = 'bg-white p-4 rounded-xl shadow hover:scale-105 transition-all text-center';
+      card.innerText = `✨ ${titel} ✨`;
+      card.onclick = async () => {
+        // rechtstreeks iframe gebruiken zonder fetch
+        document.getElementById('docTitle').innerText = `✨ ${titel} ✨`;
+        document.getElementById('summaryContent').innerHTML = `
+  <iframe src="${link}" style="width:80%; height:90%; border-radius:20px; background-color:#ffe4e1; box-shadow:0 10px 25px rgba(255, 105, 180, 0.4);" frameborder="0"></iframe>
+`;
+        openModal('contentModal');
+      };
+      list.appendChild(card);
+    });
+  } catch (err) {
+    console.error("Fout bij laden van samenvattingen:", err);
+  }
+}
 </script>
 </body>
 </html>
