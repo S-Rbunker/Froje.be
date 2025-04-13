@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌸 Froje Studiedashboard 🌸</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(135deg, #ffc0cb, #ffe4e1);
+      display: flex;
+      flex-direction: column;
+    }
+    html, body {
+        height: 100%;
+    }
+    .fade {
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+<!-- LOGIN -->
+<div id="login" class="flex items-center justify-center min-h-screen px-4">
+  <div class="bg-white rounded-xl p-10 shadow-lg text-center max-w-2xl w-full">
+    <h1 class="text-4xl font-bold text-pink-600 mb-4 animate-bounce">🎀 Frojie's studeerplekje 🎀</h1>
+    <p class="mb-4 text-lg text-gray-700">Welke dag werd Silasje één met zijn paradijs? 💖</p>
+    <div class="flex justify-center items-center gap-2 mb-6">
+      <input type="number" id="dayInput" min="1" max="31" class="border-2 border-pink-400 rounded-lg px-4 py-2 text-center w-20">
+      <span class="text-xl">/ 11 / 2024</span>
+    </div>
+    <button onclick="checkLogin()" class="bg-pink-500 hover:bg-pink-400 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all">Bevestig 💗</button>
+    <p id="loginError" class="text-red-500 mt-4 hidden">Oops! Dat is niet de juiste dag 😥</p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="container mx-auto px-4 py-8 fade" style="display:none">
+  <h1 class="text-5xl font-bold text-pink-600 text-center mb-10">📚 Frojie haar studeerwereldje 📚</h1>
+  <div class="flex justify-center">
+    <button onclick="document.getElementById('summaryCard').style.display='block'; this.style.display='none'; window.scrollTo({top: document.getElementById('summaryCard').offsetTop, behavior: 'smooth'});" class="bg-white p-6 rounded-2xl shadow-xl w-full md:w-1/2 text-left hover:scale-105 transition-all">
+      <h2 class="text-2xl font-semibold text-pink-500">✨ Stil...Gaan & HierBenIk ✨</h2>
+      <p class="mt-2 text-sm text-gray-600">Klik hier 🌈</p>
+    </button>
+  </div>
+
+  <div id="summaryCard" class="mt-12 p-8 bg-white rounded-3xl shadow-xl fade space-y-6" style="display:none">
+    <h2 class="text-3xl text-pink-600 font-bold">📘 Thema: #Stil...Gaan</h2>
+
+    <div>
+      <h3 class="text-2xl font-semibold text-purple-500">👋 Het belang van groeten</h3>
+      <ul class="list-disc ml-5 text-gray-700">
+        <li>Groeten is de start van elke menselijke relatie.</li>
+        <li>Het creëert erkenning, vertrouwen en openheid.</li>
+        <li>Niet groeten kan leiden tot gevoelens van afwijzing of onzekerheid.</li>
+        <li>Een Chinese wijsheid zegt: “De groet is belangrijker dan les of verhaal.”</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-semibold text-purple-500">🧠 Filosofie van Emmanuel Levinas</h3>
+      <ul class="list-disc ml-5 text-gray-700">
+        <li>De Ander roept ons op om verantwoordelijkheid op te nemen.</li>
+        <li>Het gelaat van de Ander raakt ons en vraagt om respect.</li>
+        <li>“Ont-moeten” betekent dat er geen verplichting is, enkel echte ontmoeting.</li>
+        <li>We kunnen de Ander nooit volledig begrijpen of bezitten – die blijft mysterievol.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-semibold text-purple-500">🚶 Mensen van de Weg</h3>
+      <ul class="list-disc ml-5 text-gray-700">
+        <li>Vroege christenen werden zo genoemd omdat ze altijd “onderweg” waren – letterlijk en figuurlijk.</li>
+        <li>Ze leefden in navolging van Jezus: actief in liefde, zorg en rechtvaardigheid.</li>
+        <li>Hun geloof werd zichtbaar in wat ze deden: helpen, spreken, liefhebben.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-semibold text-purple-500">🛑 Rustplaatsen onderweg</h3>
+      <ul class="list-disc ml-5 text-gray-700">
+        <li>Jezus trok zich regelmatig terug om te bidden en tot rust te komen.</li>
+        <li>Autobahn-kapelletjes en andere stille plaatsen zijn symbolen van innerlijke rust.</li>
+        <li>Stilte is nodig om jezelf te horen en tot inzicht te komen.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-semibold text-purple-500">🕍 Sabbat & Zondag</h3>
+      <ul class="list-disc ml-5 text-gray-700">
+        <li>Sabbat: Joodse rustdag van vrijdagavond tot zaterdagavond.</li>
+        <li>Zondag: voor christenen een dag van ontmoeting, eucharistie, bezinning en gemeenschap.</li>
+        <li>Beide dagen zijn bedoeld als pauzemoment, voor spiritueel herbronnen.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-semibold text-purple-500">🏡 Herberg als symbool</h3>
+      <ul class="list-disc ml-5 text-gray-700">
+        <li>Een herberg staat voor gastvrijheid: iemand verwelkomen, zorg bieden, ruimte geven.</li>
+        <li>Jezus waste de voeten van zijn leerlingen – een radicaal dienstbaar gebaar.</li>
+        <li>De moderne samenleving roept ook op tot gastvrijheid voor migranten en mensen in nood.</li>
+      </ul>
+    </div>
+
+    <h2 class="text-3xl text-pink-600 font-bold mt-10">💭 Thema: #HierBenIk</h2>
+
+    <div>
+      <h3 class="text-2xl font-semibold text-indigo-500">🎯 Keuzes maken</h3>
+      <ul class="list-disc ml-5 text-gray-700">
+        <li>We maken dagelijks keuzes – groot en klein – die ons leven vormen.</li>
+        <li>Wie we zijn, wordt mee bepaald door wat en hoe we kiezen.</li>
+        <li>Ouders, vrienden, geloof, school en media kunnen onze keuzes beïnvloeden.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-semibold text-indigo-500">❤️ De Barmhartige Samaritaan</h3>
+      <ul class="list-disc ml-5 text-gray-700">
+        <li>Bijbelverhaal waarin een man wordt geholpen door iemand van wie men het niet verwacht.</li>
+        <li>Toont dat naastenliefde geen grenzen kent – elke mens kan je naaste zijn.</li>
+        <li>Barmhartigheid vraagt actie, ook als het moeilijk of onverwacht is.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-semibold text-indigo-500">🔥 Roeping van Mozes</h3>
+      <ul class="list-disc ml-5 text-gray-700">
+        <li>God roept Mozes via een brandend braambos.</li>
+        <li>Mozes twijfelt en voelt zich ongeschikt, maar God blijft hem aanmoedigen.</li>
+        <li>Roeping betekent: zich geroepen voelen om iets goeds te doen, ondanks angst of twijfel.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-semibold text-indigo-500">🌺 Jeanne Devos</h3>
+      <ul class="list-disc ml-5 text-gray-700">
+        <li>Zij werd missionaris in India en zette zich in voor huisarbeidsters.</li>
+        <li>Voelde een innerlijke roeping om liefde te geven en gerechtigheid te zoeken.</li>
+        <li>Zij leefde in eenvoud, trouw aan haar droom en idealen.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-semibold text-indigo-900">🔑 Kernbegrippen</h3>
+      <ul class="list-disc ml-5 text-gray-700">
+        <li><strong>Ontmoeten:</strong> Vrij en respectvol contact tussen mensen.</li>
+        <li><strong>Appel:</strong> Innerlijke oproep tot actie of verantwoordelijkheid.</li>
+        <li><strong>Barmhartigheid:</strong> Je geraakt voelen door het lijden van een ander én iets doen.</li>
+        <li><strong>Naastenliefde:</strong> Zorg en betrokkenheid voor iedereen, ook wie anders is.</li>
+        <li><strong>Roeping:</strong> Gevoel dat je iets zinvols móet doen.</li>
+        <li><strong>Stilte:</strong> Moment van pauze, rust, bezinning – broodnodig.</li>
+        <li><strong>Gastvrijheid:</strong> Anderen welkom heten, zelfs als ze ‘anders’ zijn.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-semibold text-indigo-900">📌 Praktijkvoorbeelden</h3>
+      <ul class="list-disc ml-5 text-gray-700">
+        <li><strong>Barmhartige Samaritaan:</strong> Iemand helpen op straat die je niet kent.</li>
+        <li><strong>Jeanne Devos:</strong> Je inzetten voor onzichtbare groepen.</li>
+        <li><strong>Rustmomenten:</strong> Even pauze nemen van je gsm of schoolstress om te ademen.</li>
+        <li><strong>Gastvrijheid:</strong> Een klasgenoot die nieuw is welkom heten en begeleiden.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<footer class="mt-auto pb-4 text-pink-600 text-center text-sm">
+    © Met véél liefde gemaakt door Silasje voor Frojie 💖
+</footer>
+
+<script>
+  function checkLogin() {
+    const day = document.getElementById('dayInput').value;
+    const error = document.getElementById('loginError');
+    if (day === '24') {
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+    } else {
+      error.classList.remove('hidden');
+      setTimeout(() => error.classList.add('hidden'), 3000);
+    }
+  }
+</script>
+</body>
+</html>

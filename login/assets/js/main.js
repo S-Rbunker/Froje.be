@@ -50,9 +50,14 @@ document.getElementById('login-form').addEventListener('submit', async function 
       document.getElementById('rate-limit').style.display = 'block';
       document.getElementById('error-message').style.display = 'none';
     } else if (response.ok) {
-      // Successful login
       const data = await response.json();
-      window.location.href = '/';
+    
+      // Haal redirect-parameter op uit URL
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect') || '/';
+    
+      // Redirect correct
+      window.location.href = redirect;
     } else {
       // Other error (e.g., 401, 500)
       document.getElementById('error-message').style.display = 'block';
@@ -65,19 +70,16 @@ document.getElementById('login-form').addEventListener('submit', async function 
 // Redirect if already logged in
 (async function redirectIfLoggedIn() {
   try {
-    // Make a request to your Node endpoint that returns user info if logged in
     const response = await fetch('https://api.froje.be/user', {
-      credentials: 'include', // crucial for cross-site cookies
+      credentials: 'include',
     });
 
-    // If the server returns 200, user is logged in
     if (response.ok) {
-      // Redirect to homepage (or wherever) if already logged in
-      window.location.href = '/';
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect') || '/';
+      window.location.href = redirect;
     }
-    // If response is 401 or 404, do nothing—user can stay on login page
   } catch (err) {
     console.error('Error checking if user is logged in:', err);
-    // Optionally handle errors (network issues, etc.)
   }
 })();
