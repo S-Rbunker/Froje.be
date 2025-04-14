@@ -189,8 +189,7 @@ async function laadSamenvattingen(vak) {
     const apiURL = "https://script.google.com/macros/s/AKfycbxIysg_We_EwYDM7gON32la6hevsNJdtCetHc8uJ-AdFAFSllAYSRinzWE-tLQVS_9-3A/exec?vak=" + vak.toLowerCase();
 
     try {
-    const proxy = "http://localhost:8080/";
-    const response = await fetch(proxy + apiURL);
+    const response = await fetch(apiURL);
     const data = await response.json();
     console.log("Reactie van server ontvangen:", data);
 
@@ -236,7 +235,7 @@ async function toonPresentatie() {
   const proxy = "http://localhost:8080/";
 
   try {
-    const response = await fetch(proxy + apiURL);
+    const response = await fetch(apiURL);
     const data = await response.json();
 
     const match = data.find(doc => {
