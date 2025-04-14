@@ -108,12 +108,12 @@
     <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('filosofie')">📜 Filosofie</button>
     <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('wiskunde')">🧮 Wiskunde</button>
     <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('kunstbeschouwing')">🎨 Kunstbeschouwing</button>
+    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('frans')">🇫🇷 Frans</button>
 
     <div class="col-span-full text-center text-3xl font-bold text-pink-700 mt-10">📗 B-Vakken</div>
 
     <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('aardrijkskunde')">🌍 Aardrijkskunde</button>
     <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('engels')">🇬🇧 Engels</button>
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('frans')">🇫🇷 Frans</button>
     <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('geschiedenis')">🏰 Geschiedenis</button>
     <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('biologie')">🧬 Biologie</button>
     <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('fysica')">⚡ Fysica</button>
@@ -134,10 +134,25 @@
   <div id="contentModal" class="modal hidden">
     <div class="modal-content relative">
       <button onclick="closeModal('contentModal')" class="absolute top-4 right-4 z-50 text-xl font-bold text-pink-500">✖</button>
-      <h3 id="docTitle" class="text-center text-2xl font-bold text-pink-700 py-4 bg-pink-100 z-10">✨ Samenvatting ✨</h3>
+      <div class="relative">
+        <h3 id="docTitle" class="text-center text-2xl font-bold text-pink-700 py-4 bg-pink-100 z-10">✨ Samenvatting ✨</h3>
+        <button onclick="toonPresentatie()" class="absolute left-4 top-4 text-xl" title="Toon presentatie">
+          <img src="https://cdn-icons-png.flaticon.com/512/15465/15465726.png" alt="ppt icon" class="w-8 h-8">
+        </button>
+      </div>
       <div id="summaryContent" class="flex-1">
         <iframe id="summaryIframe" class="w-full h-full border-0" frameborder="0" style="background-color: #ffe4e1 !important;"></iframe>
     </div>
+    </div>
+  </div>
+
+  <div id="presentationModal" class="modal hidden">
+    <div class="modal-content relative">
+      <button onclick="closeModal('presentationModal')" class="absolute top-4 right-4 z-50 text-xl font-bold text-pink-500">✖</button>
+      <h3 class="text-center text-2xl font-bold text-pink-700 py-4 bg-pink-100 z-10">✨ Presentatie ✨</h3>
+      <div class="flex-1 flex justify-center items-center bg-pink-50">
+        <iframe id="presentationIframe" class="w-11/12 h-5/6 rounded-xl shadow-lg border-0" frameborder="0" allowfullscreen></iframe>
+      </div>
     </div>
   </div>
 
@@ -175,7 +190,8 @@ async function laadSamenvattingen(vak) {
     const apiURL = "https://script.google.com/macros/s/AKfycbxIysg_We_EwYDM7gON32la6hevsNJdtCetHc8uJ-AdFAFSllAYSRinzWE-tLQVS_9-3A/exec?vak=" + vak.toLowerCase();
 
     try {
-    const response = await fetch(apiURL);
+    const proxy = "http://localhost:8080/";
+    const response = await fetch(proxy + apiURL);
     const data = await response.json();
     console.log("Reactie van server ontvangen:", data);
 
@@ -211,6 +227,39 @@ async function laadSamenvattingen(vak) {
     });
   } catch (err) {
     console.error("Fout bij laden van samenvattingen:", err);
+  }
+}
+
+async function toonPresentatie() {
+  const titel = document.getElementById("docTitle").innerText.replace(/✨/g, "").trim().toLowerCase();
+
+  const apiURL = "https://script.google.com/macros/s/AKfycbzTNV7R6_MTfIctCtnrxaSF1cYzjlyOzqg8vDpkVMxpkC4D-QYH1vFtDAvZGUj6rzE4/exec?vak=presentaties/";
+  const proxy = "http://localhost:8080/";
+
+  try {
+    const response = await fetch(proxy + apiURL);
+    const data = await response.json();
+
+    const match = data.find(doc => {
+      const [docTitel] = doc.titel.split("|");
+      return docTitel.trim().toLowerCase() === titel;
+    });
+
+    if (match) {
+      const parts = match.titel.split("|");
+      const embedUrl = parts[1]?.trim();
+      if (embedUrl) {
+        document.getElementById("presentationIframe").src = embedUrl;
+        openModal("presentationModal");
+      } else {
+        alert("Er is geen geldige link gevonden voor deze presentatie.");
+      }
+    } else {
+      alert("Geen presentatie gevonden 😢");
+    }
+  } catch (err) {
+    console.error("Fout bij het ophalen van presentatie:", err);
+    alert("Kon de presentatie niet laden 😢");
   }
 }
 </script>
