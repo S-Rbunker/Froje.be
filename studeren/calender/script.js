@@ -203,9 +203,11 @@ let activeTaskId = null;
         }
       }
       if (info.event.extendedProps.description) {
-        const isMonthView = info.view.type === "dayGridMonth";
-        if (!isMonthView) {
-          const el = info.el.querySelector('.fc-event-title');
+        const viewType = info.view.type;
+        const showDesc = viewType !== "dayGridMonth"; // hide in month view
+      
+        if (showDesc) {
+          const el = info.el.querySelector('.fc-event-title, .fc-list-event-title');
           if (el) {
             const desc = document.createElement('div');
             desc.innerText = info.event.extendedProps.description;
