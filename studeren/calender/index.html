@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎀 Kalendertje</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/x-icon" href="/Rbunker music logo youtube.ico">
+</head>
+<body>
+  <header>
+    <h1>🎀 Frojie haar kalendertje</h1>
+    <div class="button-group">
+      <button id="openModal">+ Taak toevoegen</button>
+      <button id="syncSmartschool">🔄 Sync met Smartschool</button>
+      <button id="desyncSmartschool">🗑️ Verwijder alles</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="calendar"></div>
+    <section id="predefined-tasks" class="task-sections">
+      <h2>📚 Templates</h2>
+      <div id="template-list" class="template-list">
+        <!-- Templates will be inserted here via JS -->
+      </div>
+    </section>
+    <section id="open-tasks">
+      <h2>⏰ Open Taken</h2>
+      <ul id="open-task-list"></ul>
+    </section>
+
+    <section id="completed-tasks">
+      <h2>✅ Voltooide Taken</h2>
+      <ul id="completed-task-list"></ul>
+    </section>
+  </main>
+
+  <!-- Natural Language Modal -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>📝 Nieuwe taak (NL)</h3>
+      <input type="text" id="taskInput" placeholder="bv. morgen om 8u frans leren">
+      <textarea id="taskDescription" placeholder="Beschrijving (optioneel)"></textarea>
+      <button id="addTask">Toevoegen</button>
+      <button id="closeModal">Sluiten</button>
+    </div>
+  </div>
+
+  <!-- Manual Task Modal -->
+  <div id="manualModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>📅 Nieuwe handmatige taak</h3>
+      <label>Titel</label>
+      <input type="text" id="manualTitle" placeholder="bv. Taak naam">
+      
+      <label>Beschrijving</label>
+      <textarea id="manualDesc" placeholder="Optionele notities"></textarea>
+      
+      <label>Starttijd</label>
+      <input type="datetime-local" id="manualStart" />
+
+      <label>Eindtijd</label>
+      <input type="datetime-local" id="manualEnd" />
+      
+      <button id="confirmManualTask">Toevoegen</button>
+      <button id="closeManualModal">Sluiten</button>
+    </div>
+  </div>
+
+  <div id="taskModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>📝 Taak details</h3>
+      <input type="text" id="taskEditTitle" placeholder="Titel" />
+      <textarea id="taskEditDesc" placeholder="Beschrijving"></textarea>
+      <label for="taskColor">Kleur</label>
+      <div id="colorOptions" class="color-options">
+        <div class="color-swatch" data-color="#ff69b4" style="background:#ff69b4;"></div>
+        <div class="color-swatch" data-color="#d63384" style="background:#d63384;"></div>
+        <div class="color-swatch" data-color="#cc66cc" style="background:#cc66cc;"></div>
+        <div class="color-swatch" data-color="#9966cc" style="background:#9966cc;"></div>
+        <div class="color-swatch" data-color="#ff9999" style="background:#ff9999;"></div>
+        <div class="color-swatch" data-color="#ff6666" style="background:#ff6666;"></div>
+        <div class="color-swatch" data-color="#ffb347" style="background:#ffb347;"></div>
+        <div class="color-swatch" data-color="#ffcc5c" style="background:#ffcc5c;"></div>
+        <div class="color-swatch" data-color="#f08080" style="background:#f08080;"></div>
+        <div class="color-swatch" data-color="#e75480" style="background:#e75480;"></div>
+        <input type="hidden" id="taskColor" value="#ff69b4" />
+      </div>
+      <div style="margin-top: 1rem;">
+        <button id="saveTaskChanges">Opslaan ✔️</button>
+        <button id="deleteTaskBtn">🗑️</button>
+        <button onclick="closeTaskModal()">Sluiten</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cookie-dialog" class="dialog-hidden">
+    <div class="cookie-box">
+      <h2>🔐 Smartschool Cookies</h2>
+      <p>Voer je cookies hieronder in om verbinding te maken met Smartschool:</p>
+      <label>PHPSESSID:<input type="text" id="cookie-php"></label>
+      <label>pid:<input type="text" id="cookie-pid"></label>
+      <label>smscndc:<input type="text" id="cookie-smscndc"></label>
+      <button id="save-cookies">Opslaan</button>
+    </div>
+  </div>
+  
+  <script src="script.js" defer></script>
+</body>
+</html>
