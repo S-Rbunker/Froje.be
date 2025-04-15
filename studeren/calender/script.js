@@ -668,7 +668,7 @@ let activeTaskId = null;
       }
   
       const result = await response.json();
-      alert(`✅ ${result.status} (${result.count} lessen geïmporteerd)`);
+      alert(` ${result.status} (${result.count} lessen uit smartschool gehaald)`);
       calendar.refetchEvents();
     } catch (err) {
       alert("❌ Er is een fout opgetreden bij het synchroniseren met Smartschool.");
@@ -676,7 +676,7 @@ let activeTaskId = null;
   }
 
 document.getElementById('desyncSmartschool').addEventListener('click', async () => {
-  const confirmDelete = confirm("Weet je zeker dat je alle events uit de kalender wilt verwijderen?");
+  const confirmDelete = confirm("Weet je zeker dat je alle taken uit de kalender wilt verwijderen?");
   if (!confirmDelete) return;
 
   const response = await fetch('https://api.froje.be/events', { method: 'DELETE' });
