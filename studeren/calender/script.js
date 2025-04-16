@@ -23,6 +23,29 @@ document.addEventListener("DOMContentLoaded", function () {
   const markCompleteBtn = document.getElementById("markCompleteBtn");
   const deleteTaskBtn = document.getElementById("deleteTaskBtn");
 
+  (async function () {
+    try {
+      const res = await fetch('https://api.froje.be/user', { credentials: 'include' });
+      if (!res.ok) throw new Error();
+
+      const user = await res.json();
+      if (user.id !== "VZc7vn2XK5b7ubR2titjnGmBRJtUfQR8") throw new Error();
+
+      // ✅ Auth passed, show page and restore anchor jump
+      // Fix for anchor links not scrolling correctly after delayed display
+      if (window.location.hash) {
+        const target = document.querySelector(window.location.hash);
+        if (target) {
+          setTimeout(() => target.scrollIntoView({ behavior: 'smooth' }), 100);
+        }
+      }
+    } catch (e) {
+      const fullPath = window.location.pathname + window.location.search + window.location.hash;
+      sessionStorage.setItem("loginRedirect", fullPath);
+      window.location.href = '/login?redirect=' + encodeURIComponent(fullPath);
+    }
+  })();
+  
 let activeTaskId = null;
 
   const openList = document.getElementById("open-task-list");
