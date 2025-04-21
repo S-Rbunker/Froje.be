@@ -100,6 +100,9 @@
   <div id="quoteContainer" class="mx-auto max-w-2xl my-8 bg-gradient-to-r from-pink-100 to-pink-200 border-l-8 border-pink-500 rounded-xl p-6 shadow-xl text-center text-pink-900 font-serif text-lg italic animate-fadeIn">
     🌟 Motivatie laden... 🌟
   </div>
+  <div id="catContainer" class="mx-auto max-w-md my-6 bg-pink-50 border-4 border-pink-300 rounded-2xl overflow-hidden shadow-xl animate-fadeIn">
+    <img id="catImage" src="" alt="Schattige kat 🐾" class="w-full object-cover h-72">
+  </div>
   <!-- VAKSELECTIE -->
   <div id="subjectSelector" class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 fade">
     <div class="col-span-full text-center text-3xl font-bold text-pink-700">📘 A-Vakken</div>
@@ -247,6 +250,23 @@ async function laadMotiverendeQuote() {
   }
 }
 
+async function laadRandomKat() {
+  const img = document.getElementById("catImage");
+
+  try {
+    const res = await fetch("https://api.thecatapi.com/v1/images/search");
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0 && data[0].url) {
+      img.src = data[0].url;
+    } else {
+      throw new Error("No image found");
+    }
+  } catch (e) {
+    img.alt = "Kon geen kat laden 😿";
+    img.src = "https://cataas.com/cat/says/Oeps";
+  }
+}
+
 // Laad quote wanneer dashboard zichtbaar wordt
 document.addEventListener("DOMContentLoaded", () => {
   const dayInput = document.getElementById('dayInput');
@@ -290,6 +310,13 @@ async function toonPresentatie() {
     alert("Kon de presentatie niet laden 😢");
   }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const catImg = document.getElementById("catImage");
+  if (catImg) {
+    laadRandomKat();
+  }
+});
 </script>
 </body>
 </html>
