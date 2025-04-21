@@ -102,6 +102,7 @@ let activeTaskId = null;
     locale: "nl",
     droppable: true,
     dropAccept: ".template-item",
+    slotDuration: "00:15:00",
     eventReceive: function(info) {
       const title = info.event.title;
       const color = info.draggedEl.style.backgroundColor || "#ff69b4";
@@ -212,7 +213,7 @@ let activeTaskId = null;
     eventDidMount: (info) => {
       const subjectCodes = ["INF", "WIS", "AAR", "SEP", "GOD", "NED", "LIO", "ENG", "FRA", "FIL", "KUB", "CHE", "FYS", "BIO", "GES"];
       const title = info.event.title || "";
-      const containsSubjectCode = subjectCodes.some(code => title.toUpperCase().includes(code));
+      const containsSubjectCode = subjectCodes.includes(title.trim());
     
       if (!info.event.extendedProps.isCompleted && !containsSubjectCode) {
         const titleEl = info.el.querySelector(".fc-event-title");
@@ -279,7 +280,7 @@ let activeTaskId = null;
     { title: "🧪 Chemie", color: "#7986cb" },
     { title: "✝️ Godsdienst", color: "#ce93d8" },
     { title: "📝 Toets", color: "#f44336" },
-    { title: "📝 Taak", color: "#fbc02d" },
+    { title: "📝 Taak", color: "#F08000" },
   ];
   
   const templateList = document.getElementById("template-list");
@@ -410,15 +411,90 @@ let activeTaskId = null;
   saveTaskChanges.onclick = async () => {
     if (!activeTaskId) return;
   
+    const title = taskEditTitle.value;
+    const description = taskEditDesc.value;
+    const color = taskColor.value;
+  
+    const repeatDaily = document.getElementById("repeatDaily").checked;
+    const repeatWeekly = document.getElementById("repeatWeekly").checked;
+    const repeatMonthly = document.getElementById("repeatMonthly").checked;
+  
+    const dailyForever = document.getElementById("dailyForever").checked;
+    const weeklyForever = document.getElementById("weeklyForever").checked;
+    const monthlyForever = document.getElementById("monthlyForever").checked;
+  
+    const startTimeStr = document.getElementById("editStartTime").value;
+    const endTimeStr = document.getElementById("editEndTime").value;
+  
+    // 1. Fetch the original to base updates on
+    const res = await axios.get(`https://api.froje.be/events/${activeTaskId}`);
+    const original = res.data;
+    const startDate = new Date(original.start);
+    const endDate = new Date(original.end || original.start);
+  
+    // 2. Apply time changes
+    if (startTimeStr) {
+      const [h, m] = startTimeStr.split(":").map(Number);
+      startDate.setHours(h, m);
+    }
+    if (endTimeStr) {
+      const [h, m] = endTimeStr.split(":").map(Number);
+      endDate.setHours(h, m);
+    }
+  
+    // 3. Update the original event with title, description, color, AND start/end
     await axios.patch(`https://api.froje.be/events/${activeTaskId}`, {
-      title: taskEditTitle.value,
-      description: taskEditDesc.value,
-      color: taskColor.value,
+      title,
+      description,
+      color,
+      start: startDate.toISOString(),
+      end: endDate.toISOString(),
     });
+  
+    // 4. Remove old repeats
+    const existing = await axios.get("https://api.froje.be/events");
+    const toDelete = existing.data.filter(e => Number(e.repeatOrigin) === Number(activeTaskId));
+    for (const task of toDelete) {
+      await axios.delete(`https://api.froje.be/events/${task.id}`);
+    }
+  
+    // 5. Recreate new repeats based on the updated time
+    const createRepeat = async (interval, count) => {
+      for (let i = 1; i <= count; i++) {
+        const newStart = new Date(startDate);
+        const newEnd = new Date(endDate);
+        if (interval === "day") {
+          newStart.setDate(newStart.getDate() + i);
+          newEnd.setDate(newEnd.getDate() + i);
+        } else if (interval === "week") {
+          newStart.setDate(newStart.getDate() + i * 7);
+          newEnd.setDate(newEnd.getDate() + i * 7);
+        } else if (interval === "month") {
+          newStart.setMonth(newStart.getMonth() + i);
+          newEnd.setMonth(newEnd.getMonth() + i);
+        }
+  
+        await axios.post("https://api.froje.be/events", {
+          title,
+          description,
+          color,
+          start: newStart.toISOString(),
+          end: newEnd.toISOString(),
+          repeatOrigin: activeTaskId,
+          repeatType: interval,
+        });
+      }
+    };
+  
+    if (repeatDaily) await createRepeat("day", dailyForever ? 365 : 7);
+    if (repeatWeekly) await createRepeat("week", weeklyForever ? 52 : 4);
+    if (repeatMonthly) await createRepeat("month", monthlyForever ? 36 : 3);
   
     calendar.refetchEvents();
     closeTaskModal();
   };
+  
+  
   
   
   deleteTaskBtn.onclick = async () => {
@@ -432,15 +508,28 @@ let activeTaskId = null;
   
   
   function handleEventClick(info) {
+    const task = info.event;
     const subjectCodes = ["INF", "WIS", "AAR", "SEP", "GOD", "NED", "LIO", "ENG", "FRA", "FIL", "KUB", "CHE", "FYS", "BIO", "GES"];
     const title = info.event.title || "";
-    const containsSubjectCode = subjectCodes.some(code => title.toUpperCase().includes(code));
+    const containsSubjectCode = subjectCodes.includes(title.trim());
   
     if (containsSubjectCode) {
       return; // 🚫 Don't open modal for these events
     }
+    const startTime = new Date(task.start);
+    const endTime = new Date(task.end || task.start);
+    
+    const startHours = String(startTime.getHours()).padStart(2, "0");
+    const startMinutes = String(startTime.getMinutes()).padStart(2, "0");
+    
+    const endHours = String(endTime.getHours()).padStart(2, "0");
+    const endMinutes = String(endTime.getMinutes()).padStart(2, "0");
+    
+    document.getElementById("editStartTime").value = `${startHours}:${startMinutes}`;
+    document.getElementById("editEndTime").value = `${endHours}:${endMinutes}`;
+
   
-    const task = info.event;
+
     activeTaskId = task.id;
   
     taskEditTitle.value = task.title;
@@ -462,8 +551,19 @@ let activeTaskId = null;
     axios.get("https://api.froje.be/events").then((res) => {
       // Only handle non-Smartschool events
       const nonSmartschoolTasks = res.data.filter((t) => t.source !== 'smartschool');
-      const openTasks = res.data.filter((t) => !t.isCompleted && !t.isLesson);
-      const doneTasks = res.data.filter((t) => t.isCompleted && !t.isLesson);
+      const now = new Date();
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Monday
+      startOfWeek.setHours(0, 0, 0, 0);
+      
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999);
+      
+      const openTasks = res.data.filter((t) => {
+        const taskDate = new Date(t.start);
+        return !t.isCompleted && !t.isLesson && taskDate >= startOfWeek && taskDate <= endOfWeek;
+      });      const doneTasks = res.data.filter((t) => t.isCompleted && !t.isLesson);
   
       const allDayTasks = openTasks.filter((t) => {
         const start = new Date(t.start);

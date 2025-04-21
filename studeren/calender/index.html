@@ -77,6 +77,20 @@
       <h3>📝 Taak details</h3>
       <input type="text" id="taskEditTitle" placeholder="Titel" />
       <textarea id="taskEditDesc" placeholder="Beschrijving"></textarea>
+      <div class="repeat-controls">
+        <div class="repeat-row">
+          <label><input type="checkbox" id="repeatDaily"> Herhaal dagelijks</label>
+          <label><input type="checkbox" id="dailyForever"> Voor altijd</label>
+        </div>
+        <div class="repeat-row">
+          <label><input type="checkbox" id="repeatWeekly"> Herhaal wekelijks</label>
+          <label><input type="checkbox" id="weeklyForever"> Voor altijd</label>
+        </div>
+        <div class="repeat-row">
+          <label><input type="checkbox" id="repeatMonthly"> Herhaal maandelijks</label>
+          <label><input type="checkbox" id="monthlyForever"> Voor altijd</label>
+        </div>
+      </div>      
       <label for="taskColor">Kleur</label>
       <div id="colorOptions" class="color-options">
         <div class="color-swatch" data-color="#ff69b4" style="background:#ff69b4;"></div>
@@ -90,6 +104,16 @@
         <div class="color-swatch" data-color="#f08080" style="background:#f08080;"></div>
         <div class="color-swatch" data-color="#e75480" style="background:#e75480;"></div>
         <input type="hidden" id="taskColor" value="#ff69b4" />
+      </div>
+      <div class="time-controls">
+        <label>
+          Starttijd:
+          <input type="time" id="editStartTime">
+        </label>
+        <label>
+          Eindtijd:
+          <input type="time" id="editEndTime">
+        </label>
       </div>
       <div style="margin-top: 1rem;">
         <button id="saveTaskChanges">Opslaan ✔️</button>
