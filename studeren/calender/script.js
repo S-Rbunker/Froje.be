@@ -210,7 +210,11 @@ let activeTaskId = null;
     eventClick: handleEventClick,
     events: fetchEvents,
     eventDidMount: (info) => {
-      if (!info.event.extendedProps.isCompleted) {
+      const subjectCodes = ["INF", "WIS", "AAR", "SEP", "GOD", "NED", "LIO", "ENG", "FRA", "FIL", "KUB", "CHE", "FYS", "BIO", "GES"];
+      const title = info.event.title || "";
+      const containsSubjectCode = subjectCodes.some(code => title.toUpperCase().includes(code));
+    
+      if (!info.event.extendedProps.isCompleted && !containsSubjectCode) {
         const titleEl = info.el.querySelector(".fc-event-title");
         if (titleEl) {
           const btn = document.createElement("button");
@@ -225,10 +229,12 @@ let activeTaskId = null;
           titleEl.appendChild(btn);
         }
       }
+    
+      // Description logic remains the same
       if (info.event.extendedProps.description) {
         const viewType = info.view.type;
-        const showDesc = viewType !== "dayGridMonth"; // hide in month view
-      
+        const showDesc = viewType !== "dayGridMonth";
+    
         if (showDesc) {
           const el = info.el.querySelector('.fc-event-title, .fc-list-event-title');
           if (el) {
@@ -242,6 +248,8 @@ let activeTaskId = null;
         }
       }
     }
+    
+    
   });
 
   calendar.render();
@@ -367,6 +375,7 @@ let activeTaskId = null;
           extendedProps: {
             isCompleted: event.isCompleted,
             description: event.description,
+            source: event.source 
           },
           backgroundColor: event.color || "#FFB6C1",
         };
@@ -423,12 +432,21 @@ let activeTaskId = null;
   
   
   function handleEventClick(info) {
+    const subjectCodes = ["INF", "WIS", "AAR", "SEP", "GOD", "NED", "LIO", "ENG", "FRA", "FIL", "KUB", "CHE", "FYS", "BIO", "GES"];
+    const title = info.event.title || "";
+    const containsSubjectCode = subjectCodes.some(code => title.toUpperCase().includes(code));
+  
+    if (containsSubjectCode) {
+      return; // 🚫 Don't open modal for these events
+    }
+  
     const task = info.event;
     activeTaskId = task.id;
   
     taskEditTitle.value = task.title;
     taskEditDesc.value = task.extendedProps.description || "";
     taskColor.value = task.extendedProps.color || "#ff69b4";
+  
     colorSwatches.forEach(swatch => {
       if (swatch.dataset.color === taskColor.value) {
         swatch.classList.add("selected");
@@ -436,6 +454,7 @@ let activeTaskId = null;
         swatch.classList.remove("selected");
       }
     });
+  
     taskModal.classList.remove("hidden");
   }
 
