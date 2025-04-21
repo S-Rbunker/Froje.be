@@ -239,11 +239,9 @@ async function laadMotiverendeQuote() {
   const container = document.getElementById("quoteContainer");
 
   try {
-    const res = await fetch("https://zenquotes.io/api/random");
+    const res = await fetch("https://api.froje.be/api/quote");
     const data = await res.json();
-    const parsed = JSON.parse(data.contents);
-    const quote = parsed[0];
-    container.innerHTML = `🌟 "${quote.q}" — <strong>${quote.a}</strong>🌟`;
+    container.innerHTML = `🌟 "${data.q}" — <strong>${data.a}</strong>`;
   } catch (e) {
     container.innerText = "🌟 Falen bestaat niet, alleen feedback 🌟";
   }
