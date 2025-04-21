@@ -367,19 +367,21 @@ let activeTaskId = null;
           ((isFullDayRange && isSameDay) || (end - start >= 24 * 60 * 60 * 1000)) &&
           (viewType === "timegridweek" || viewType === "timegridday");
     
-        return {
-          id: event.id,
-          title: event.title,
-          start: event.start,
-          end: event.end,
-          allDay: shouldForceAllDay,
-          extendedProps: {
-            isCompleted: event.isCompleted,
-            description: event.description,
-            source: event.source 
-          },
-          backgroundColor: event.color || "#FFB6C1",
-        };
+          return {
+            id: event.id,
+            title: event.title,
+            start: event.start,
+            end: event.end,
+            allDay: shouldForceAllDay,
+            extendedProps: {
+              isCompleted: event.isCompleted,
+              description: event.description,
+              source: event.source,
+              repeatOrigin: event.repeatOrigin, // ✅ add this
+              repeatType: event.repeatType      // ✅ and this
+            },
+            backgroundColor: event.color || "#FFB6C1",
+          };
       });
   
       successCallback(visibleEvents);
@@ -414,25 +416,22 @@ let activeTaskId = null;
     const title = taskEditTitle.value;
     const description = taskEditDesc.value;
     const color = taskColor.value;
-  
+    const res = await axios.get(`https://api.froje.be/events/${activeTaskId}`);
     const repeatDaily = document.getElementById("repeatDaily").checked;
     const repeatWeekly = document.getElementById("repeatWeekly").checked;
     const repeatMonthly = document.getElementById("repeatMonthly").checked;
-  
+    const original = res.data;
     const dailyForever = document.getElementById("dailyForever").checked;
     const weeklyForever = document.getElementById("weeklyForever").checked;
     const monthlyForever = document.getElementById("monthlyForever").checked;
-  
+    const startDate = new Date(original.start);
+    const endDate = new Date(original.end || original.start);
     const startTimeStr = document.getElementById("editStartTime").value;
     const endTimeStr = document.getElementById("editEndTime").value;
   
     // 1. Fetch the original to base updates on
-    const res = await axios.get(`https://api.froje.be/events/${activeTaskId}`);
-    const original = res.data;
-    const startDate = new Date(original.start);
-    const endDate = new Date(original.end || original.start);
-  
-    // 2. Apply time changes
+    const rootRepeatType = repeatDaily ? "day" : repeatWeekly ? "week" : repeatMonthly ? "month" : null;
+    // Still update the current task itself
     if (startTimeStr) {
       const [h, m] = startTimeStr.split(":").map(Number);
       startDate.setHours(h, m);
@@ -441,16 +440,39 @@ let activeTaskId = null;
       const [h, m] = endTimeStr.split(":").map(Number);
       endDate.setHours(h, m);
     }
-  
-    // 3. Update the original event with title, description, color, AND start/end
     await axios.patch(`https://api.froje.be/events/${activeTaskId}`, {
       title,
       description,
       color,
       start: startDate.toISOString(),
       end: endDate.toISOString(),
+      repeatType: rootRepeatType,
+      repeatOrigin: null
     });
+    if (original.repeatOrigin) {
+      // User unticked all repeat checkboxes
+      if (
+        !repeatDaily && !repeatWeekly && !repeatMonthly &&
+        !dailyForever && !weeklyForever && !monthlyForever
+      ) {
+        // Delete ALL events with this repeatOrigin
+        await axios.delete(`/events/repeats/${original.repeatOrigin}`);
+      }
+    
+      calendar.refetchEvents();
+      closeTaskModal();
+      return;
+    }
   
+    
+    if (original.repeatOrigin && !repeatDaily && !repeatWeekly && !repeatMonthly &&
+      !dailyForever && !weeklyForever && !monthlyForever) {
+    await axios.delete(`/events/repeats/${original.repeatOrigin}`);
+    calendar.refetchEvents();
+    closeTaskModal();
+    return;
+  }
+
     // 4. Remove old repeats
     const existing = await axios.get("https://api.froje.be/events");
     const toDelete = existing.data.filter(e => Number(e.repeatOrigin) === Number(activeTaskId));
@@ -528,9 +550,24 @@ let activeTaskId = null;
     document.getElementById("editStartTime").value = `${startHours}:${startMinutes}`;
     document.getElementById("editEndTime").value = `${endHours}:${endMinutes}`;
 
-  
+    
 
     activeTaskId = task.id;
+
+    document.getElementById("repeatDaily").checked = task.extendedProps.repeatType === "day";
+    document.getElementById("repeatWeekly").checked = task.extendedProps.repeatType === "week";
+    document.getElementById("repeatMonthly").checked = task.extendedProps.repeatType === "month";
+
+    document.getElementById("dailyForever").checked = task.extendedProps.repeatType === "day";
+    document.getElementById("weeklyForever").checked = task.extendedProps.repeatType === "week";
+    document.getElementById("monthlyForever").checked = task.extendedProps.repeatType === "month";
+
+    document.getElementById("repeatDaily").disabled = !!task.extendedProps.repeatOrigin;
+    document.getElementById("repeatWeekly").disabled = !!task.extendedProps.repeatOrigin;
+    document.getElementById("repeatMonthly").disabled = !!task.extendedProps.repeatOrigin;
+    document.getElementById("dailyForever").disabled = !!task.extendedProps.repeatOrigin;
+    document.getElementById("weeklyForever").disabled = !!task.extendedProps.repeatOrigin;
+    document.getElementById("monthlyForever").disabled = !!task.extendedProps.repeatOrigin;
   
     taskEditTitle.value = task.title;
     taskEditDesc.value = task.extendedProps.description || "";
