@@ -94,7 +94,7 @@ const conversationId = urlParams.get('conversationId');
 
 const BACKEND_URL = "https://chat.froje.be/api";
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
-const API_KEY = "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";
+const API_KEY = "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";
 const MAX_IMAGES = 10; // Maximum aantal afbeeldingen per bericht
 
 const messagesDiv = document.getElementById('messages');
