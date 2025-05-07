@@ -94,7 +94,7 @@ const conversationId = urlParams.get('conversationId');
 
 const BACKEND_URL = "https://chat.froje.be/api";
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
-const API_KEY = "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";
+const API_KEY = "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";
 const MAX_IMAGES = 10; // Maximum aantal afbeeldingen per bericht
 
 const messagesDiv = document.getElementById('messages');
@@ -1024,7 +1024,9 @@ Zorg ervoor dat je antwoord ALTIJD goed gestructureerd is met HTML zonder fouten
       method: "POST",
       headers: {
         "Authorization": `Bearer ${API_KEY}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "HTTP-Referer": window.location.origin, // Add the referer header
+        "X-Title": "Frojie's Studeren" // Add an application title
       },
       body: JSON.stringify(payload)
     });
