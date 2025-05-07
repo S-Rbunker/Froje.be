@@ -3,180 +3,496 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🌸 Froje Studiedashboard 🌸</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <title>Studiedashboard 🌸</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="/Rbunker music logo youtube.ico">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #ff66b2;
+      --primary-light: #ffb3d9;
+      --primary-dark: #cc0066;
+      --secondary: #ffe6f2;
+      --accent: #ff99cc;
+    }
+    
     body {
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      background: linear-gradient(135deg, #ffc0cb, #ffe4e1);
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #ffe6f2, #ffcce6);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
     }
-    .fade {
-      animation: fadeIn 0.6s ease-in-out;
+    
+    .btn-primary {
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      color: white;
+      border-radius: 50px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 102, 178, 0.4);
     }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(255, 102, 178, 0.5);
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 20px;
+      transition: all 0.4s ease;
+      box-shadow: 0 8px 20px rgba(255, 153, 204, 0.2);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(255, 102, 178, 0.3);
+    }
+    
+    .card:hover::before {
+      transform: scaleX(1);
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.8s ease-out forwards;
+      opacity: 0;
+    }
+    
+    .bounce-in {
+      animation: bounceIn 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+    
+    .slide-up {
+      animation: slideUp 0.6s ease-out forwards;
+      opacity: 0;
+    }
+    
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .subject-card {
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .subject-card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 25px rgba(255, 105, 180, 0.4);
-    }
+    
+    .stagger-delay-1 { animation-delay: 0.1s; }
+    .stagger-delay-2 { animation-delay: 0.2s; }
+    .stagger-delay-3 { animation-delay: 0.3s; }
+    .stagger-delay-4 { animation-delay: 0.4s; }
+    .stagger-delay-5 { animation-delay: 0.5s; }
+    .stagger-delay-6 { animation-delay: 0.6s; }
+    
     .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: none;
-    z-index: 50;
-  }
-  #summaryContent {
-    display: flex;
-    justify-content: center; /* horizontaal centreren */
-    align-items: center; /* verticaal centreren (optioneel) */
-    width: 100%;
-    height: 100%;
-    background-color: #ffe4e1; /* de gewenste achtergrondkleur */
-}
-#summaryContent iframe {
-    flex: none;
-    width: 100%; /* of gewenste breedte */
-    height: 100%; /* of gewenste hoogte */
-    border: none;
-    background-color: #ffe4e1 !important;
-    border-radius: 20px; /* afgeronde hoeken, optioneel */
-}
-    .modal.modal-open {
-        display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      display: none;
+      z-index: 50;
     }
+    
+    .modal.modal-open {
+      display: flex;
+    }
+    
     .modal-content {
-    height: 100vh;
-    width: 100vw;
-    max-height: none;
-    max-width: none;
-    border-radius: 0;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    background-color: #fff0f5;
-  }
-  #docTitle {
-    padding: 1rem;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #d63384;
-    text-align: center;
-  }
+      height: 100vh;
+      width: 100vw;
+      max-height: none;
+      max-width: none;
+      border-radius: 0;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      background-color: #fff0f5;
+    }
+    
+    #summaryContent {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      background-color: #fff0f5;
+    }
+    
+    #summaryContent iframe {
+      flex: none;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background-color: #fff0f5 !important;
+      border-radius: 20px;
+    }
+    
+    #docTitle {
+      padding: 1rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary-dark);
+      text-align: center;
+    }
+    
+    .subject-link {
+      text-decoration: none !important;
+      display: inline-block;
+      margin-top: 10px;
+      color: var(--primary-dark);
+      transition: all 0.3s ease;
+    }
+    
+    .subject-link:hover {
+      transform: translateX(5px);
+      color: var(--primary);
+    }
+    
+    .cat-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+    }
+    
+    .cat-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(255, 102, 178, 0.7), rgba(255, 102, 178, 0));
+      height: 40%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 10px;
+      color: white;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .cat-container:hover .cat-overlay {
+      opacity: 1;
+    }
+    
+    .calendar-button {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .calendar-button::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, var(--primary-dark), var(--primary));
+      z-index: -1;
+      transform: scaleX(0);
+      transform-origin: bottom right;
+      transition: transform 0.5s ease;
+    }
+    
+    .calendar-button:hover::after {
+      transform-origin: bottom left;
+      transform: scaleX(1);
+    }
+    
+    .close-btn {
+      background-color: white;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .close-btn:hover {
+      transform: rotate(90deg);
+      background-color: #ffecf1;
+    }
+    
+    .quote-card {
+      background: linear-gradient(135deg, #fff6fa, #ffe0ef);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .quote-card::after {
+      content: '❝';
+      position: absolute;
+      top: -30px;
+      right: 10px;
+      font-size: 120px;
+      opacity: 0.1;
+      color: var(--primary);
+    }
   </style>
 </head>
 <body class="text-gray-800">
 
 <!-- LOGIN -->
-<div id="login" class="flex items-center justify-center min-h-screen px-4">
-  <div class="bg-white rounded-xl p-10 shadow-lg text-center max-w-2xl w-full">
-    <h1 class="text-4xl font-bold text-pink-600 mb-4 animate-bounce">🎀 Frojie's studeerplekje 🎀</h1>
-    <p class="mb-4 text-lg text-gray-700">Welke dag werd Silasje één met zijn paradijs? 💖</p>
-    <div class="flex justify-center items-center gap-2 mb-6">
-      <input type="number" id="dayInput" min="1" max="31" class="border-2 border-pink-400 rounded-lg px-4 py-2 text-center w-20">
-      <span class="text-xl">/ 11 / 2024</span>
+<div id="login" class="flex items-center justify-center min-h-screen px-4 fade-in">
+  <div class="card p-10 text-center max-w-md w-full bounce-in">
+    <h1 class="text-2xl font-bold text-pink-600 mb-6">🎀 Frojie's studeerplekje 🎀</h1>
+    <p class="mb-6 text-lg text-gray-700">Welke dag werd Silasje één met zijn paradijs? 💖</p>
+    <div class="flex justify-center items-center gap-2 mb-8">
+      <input type="number" id="dayInput" min="1" max="31" class="border-2 border-pink-400 rounded-lg px-4 py-3 text-center w-20 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent">
+      <span class="text-xl font-medium">/ 11 / 2024</span>
     </div>
-    <button onclick="checkLogin()" class="bg-pink-500 hover:bg-pink-400 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all">Bevestig 💗</button>
+    <button onclick="checkLogin()" class="btn-primary flex mx-auto items-center">
+      <span>Bevestig</span>
+      <span class="ml-2">💗</span>
+    </button>
     <p id="loginError" class="text-red-500 mt-4 hidden">Oops! Dat is niet de juiste dag 😥</p>
   </div>
 </div>
 
 <!-- DASHBOARD -->
-<div id="dashboard" class="container mx-auto px-4 py-8 fade" style="display:none">
-  <h1 class="text-5xl font-bold text-pink-600 text-center mb-10">📚 Frojie haar studeerwereldje 📚</h1>
-  <div id="quoteContainer" class="mx-auto max-w-2xl my-8 bg-gradient-to-r from-pink-100 to-pink-200 border-l-8 border-pink-500 rounded-xl p-6 shadow-xl text-center text-pink-900 font-serif text-lg italic animate-fadeIn">
-    🌟 Motivatie laden... 🌟
+<div id="dashboard" class="container mx-auto px-4 py-8" style="display:none">
+  <h1 class="text-5xl font-bold text-pink-600 text-center mb-10 fade-in">📚 Frojie haar studeerwereldje 📚</h1>
+  
+  <!-- QUOTE AND CAT SECTION -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <div class="md:col-span-2">
+      <div id="quoteContainer" class="quote-card rounded-2xl p-8 shadow-xl text-center text-pink-900 font-medium text-lg fade-in stagger-delay-1" style="max-height: 200px; display: flex; flex-direction: column; justify-content: center;">
+        🌟 Motivatie laden... 🌟
+      </div>
+    </div>
+    <div class="cat-container shadow-xl fade-in stagger-delay-2" style="height: 200px;">
+      <img id="catImage" src="" alt="Schattige kat 🐾" class="w-full object-cover h-full">
+      <div class="cat-overlay">
+        <p>Purrfecte studiemotivatie! 🐱</p>
+      </div>
+    </div>
   </div>
-  <div id="catContainer" class="mx-auto max-w-md my-6 bg-pink-50 border-4 border-pink-300 rounded-2xl overflow-hidden shadow-xl animate-fadeIn">
-    <img id="catImage" src="" alt="Schattige kat 🐾" class="w-full object-cover h-72">
+  
+  <!-- CALENDARS AND CHAT BUTTONS -->
+  <div class="flex flex-wrap justify-center gap-4 mb-12 fade-in stagger-delay-3">
+    <a href="/studeren/calender/" class="btn-primary flex items-center calendar-button">
+      <span class="mr-2">🗓️</span>
+      <span>Kalendertje</span>
+    </a>
+    <a href="/studeren/chat" class="btn-primary flex items-center calendar-button">
+      <span class="mr-2">✨</span>
+      <span>AI Assistent</span>
+    </a>
   </div>
+  
   <!-- VAKSELECTIE -->
-  <div id="subjectSelector" class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 fade">
-    <div class="col-span-full text-center text-3xl font-bold text-pink-700">📘 A-Vakken</div>
-
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('nederlands')">📗 Nederlands</button>
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('sociologie&psychologie')">🧠 Sociologie & Psychologie</button>
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('filosofie')">📜 Filosofie</button>
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('wiskunde')">🧮 Wiskunde</button>
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('kunstbeschouwing')">🎨 Kunstbeschouwing</button>
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('frans')">🇫🇷 Frans</button>
-
-    <div class="col-span-full text-center text-3xl font-bold text-pink-700 mt-10">📗 B-Vakken</div>
-
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('aardrijkskunde')">🌍 Aardrijkskunde</button>
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('engels')">🇬🇧 Engels</button>
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('geschiedenis')">🏰 Geschiedenis</button>
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('biologie')">🧬 Biologie</button>
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('fysica')">⚡ Fysica</button>
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('chemie')">🧪 Chemie</button>
-    <button class="subject-card bg-white p-6 rounded-2xl shadow-lg" onclick="laadSamenvattingen('godsdienst')">✝️ Godsdienst</button>
-    <div class="col-span-full text-center mt-12">
-      <a href="/studeren/calender/" class="inline-block bg-gradient-to-r from-pink-400 to-pink-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300">
-        🎀 Kalendertje
-      </a>
+  <div id="subjectSelector" class="mb-16">
+    <!-- A-VAKKEN -->
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-pink-700 text-center mb-8 fade-in stagger-delay-1">📘 A-Vakken</h2>
+      <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="card p-6 fade-in stagger-delay-1">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('nederlands')">
+            <span class="text-3xl mr-4">📗</span>
+            <span class="text-xl font-medium">Nederlands</span>
+          </button>
+        </div>
+        
+        <div class="card p-6 fade-in stagger-delay-2">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('sociologie&psychologie')">
+            <span class="text-3xl mr-4">🧠</span>
+            <span class="text-xl font-medium">Sociologie & Psychologie</span>
+          </button>
+        </div>
+        
+        <div class="card p-6 fade-in stagger-delay-3">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('filosofie')">
+            <span class="text-3xl mr-4">📜</span>
+            <span class="text-xl font-medium">Filosofie</span>
+          </button>
+        </div>
+        
+        <div class="card p-6 fade-in stagger-delay-4">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('wiskunde')">
+            <span class="text-3xl mr-4">🧮</span>
+            <span class="text-xl font-medium">Wiskunde</span>
+          </button>
+        </div>
+        
+        <div class="card p-6 fade-in stagger-delay-5">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('kunstbeschouwing')">
+            <span class="text-3xl mr-4">🎨</span>
+            <span class="text-xl font-medium">Kunstbeschouwing</span>
+          </button>
+        </div>
+        
+        <div class="card p-6 fade-in stagger-delay-6">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('frans')">
+            <span class="text-3xl mr-4">🇫🇷</span>
+            <span class="text-xl font-medium">Frans</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- B-VAKKEN -->
+    <div>
+      <h2 class="text-3xl font-bold text-pink-700 text-center mb-8 fade-in stagger-delay-1">📗 B-Vakken</h2>
+      <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="card p-6 fade-in stagger-delay-1">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('aardrijkskunde')">
+            <span class="text-3xl mr-4">🌍</span>
+            <span class="text-xl font-medium">Aardrijkskunde</span>
+          </button>
+        </div>
+        
+        <div class="card p-6 fade-in stagger-delay-2">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('engels')">
+            <span class="text-3xl mr-4">🇬🇧</span>
+            <span class="text-xl font-medium">Engels</span>
+          </button>
+        </div>
+        
+        <div class="card p-6 fade-in stagger-delay-3">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('geschiedenis')">
+            <span class="text-3xl mr-4">🏰</span>
+            <span class="text-xl font-medium">Geschiedenis</span>
+          </button>
+        </div>
+        
+        <div class="card p-6 fade-in stagger-delay-4">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('biologie')">
+            <span class="text-3xl mr-4">🧬</span>
+            <span class="text-xl font-medium">Biologie</span>
+          </button>
+        </div>
+        
+        <div class="card p-6 fade-in stagger-delay-5">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('fysica')">
+            <span class="text-3xl mr-4">⚡</span>
+            <span class="text-xl font-medium">Fysica</span>
+          </button>
+        </div>
+        
+        <div class="card p-6 fade-in stagger-delay-6">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('chemie')">
+            <span class="text-3xl mr-4">🧪</span>
+            <span class="text-xl font-medium">Chemie</span>
+          </button>
+        </div>
+        
+        <div class="card p-6 fade-in stagger-delay-1">
+          <button class="w-full text-left flex items-center" onclick="laadSamenvattingen('godsdienst')">
+            <span class="text-3xl mr-4">✝️</span>
+            <span class="text-xl font-medium">Godsdienst</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- MODALS -->
-<div id="summaryModal" class="modal hidden">
-    <div class="bg-pink-200 rounded-3xl p-8 modal-content w-full max-w-2xl relative">
-      <button onclick="closeModal('summaryModal')" class="absolute top-4 right-4 text-xl font-bold text-pink-500">✖</button>
-      <h2 class="text-center text-2xl font-bold text-pink-600 mb-6">✨ Kies een samenvatting ✨</h2>
-      <div id="summaryList" class="grid gap-4"></div>
-    </div>
+<div id="summaryModal" class="modal">
+  <div class="bg-white rounded-3xl p-8 m-4 max-w-2xl w-full relative mx-auto my-auto">
+    <button onclick="closeModal('summaryModal')" class="close-btn absolute -top-5 -right-5">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+    <h2 class="text-center text-2xl font-bold text-pink-600 mb-6">✨ Kies een samenvatting ✨</h2>
+    <div id="summaryList" class="grid gap-4 max-h-96 overflow-y-auto pr-2"></div>
   </div>
-  
-  <div id="contentModal" class="modal hidden">
-    <div class="modal-content relative">
-      <button onclick="closeModal('contentModal')" class="absolute top-4 right-4 z-50 text-xl font-bold text-pink-500">✖</button>
-      <div class="relative">
-        <h3 id="docTitle" class="text-center text-2xl font-bold text-pink-700 py-4 bg-pink-100 z-10">✨ Samenvatting ✨</h3>
-        <button onclick="toonPresentatie()" class="absolute left-4 top-4 text-xl" title="Toon presentatie">
-          <img src="https://cdn-icons-png.flaticon.com/512/15465/15465726.png" alt="ppt icon" class="w-8 h-8">
-        </button>
-      </div>
-      <div id="summaryContent" class="flex-1">
-        <iframe id="summaryIframe" class="w-full h-full border-0" frameborder="0" style="background-color: #ffe4e1 !important;"></iframe>
-    </div>
-    </div>
-  </div>
+</div>
 
-  <div id="presentationModal" class="modal hidden">
-    <div class="modal-content relative">
-      <button onclick="closeModal('presentationModal')" class="absolute top-4 right-4 z-50 text-xl font-bold text-pink-500">✖</button>
-      <h3 class="text-center text-2xl font-bold text-pink-700 py-4 bg-pink-100 z-10">✨ Presentatie ✨</h3>
-      <div class="flex-1 flex justify-center items-center bg-pink-50">
-        <iframe id="presentationIframe" class="w-11/12 h-5/6 rounded-xl shadow-lg border-0" frameborder="0" allowfullscreen></iframe>
-      </div>
+<div id="contentModal" class="modal">
+  <div class="modal-content relative">
+    <button onclick="closeModal('contentModal')" class="close-btn absolute top-4 right-4 z-50">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+    <div class="relative">
+      <h3 id="docTitle" class="text-center text-2xl font-bold text-pink-700 py-4 bg-pink-100 z-10">✨ Samenvatting ✨</h3>
+      <button onclick="toonPresentatie()" class="absolute left-4 top-4 text-xl" title="Toon presentatie">
+        <img src="https://cdn-icons-png.flaticon.com/512/15465/15465726.png" alt="ppt icon" class="w-8 h-8 hover:opacity-70 transition-opacity">
+      </button>
+    </div>
+    <div id="summaryContent" class="flex-1">
+      <iframe id="summaryIframe" class="w-full h-full border-0" frameborder="0"></iframe>
     </div>
   </div>
+</div>
+
+<div id="presentationModal" class="modal">
+  <div class="modal-content relative">
+    <button onclick="closeModal('presentationModal')" class="close-btn absolute top-4 right-4 z-50">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+    <h3 class="text-center text-2xl font-bold text-pink-700 py-4 bg-pink-100 z-10">✨ Presentatie ✨</h3>
+    <div class="flex-1 flex justify-center items-center bg-pink-50">
+      <iframe id="presentationIframe" class="w-11/12 h-5/6 rounded-xl shadow-lg border-0" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
 
 <!-- FOOTER -->
-<footer class="mt-auto pb-4 text-pink-600 text-center text-sm">
-  © Met véél liefde gemaakt door Silasje voor Frojie 💖
+<footer class="mt-auto pb-6 pt-6 text-pink-600 text-center text-sm">
+  <div class="container mx-auto px-4">
+    <p class="fade-in">© Met véél liefde gemaakt door Silasje voor Frojie 💖</p>
+  </div>
 </footer>
-
 <script>
+  // Show elements with animation
+  function showElementsWithAnimation() {
+    const fadeElements = document.querySelectorAll('.fade-in');
+    
+    fadeElements.forEach(element => {
+      element.style.animationPlayState = 'running';
+    });
+  }
+
   function checkLogin() {
     const day = document.getElementById('dayInput').value;
     const error = document.getElementById('loginError');
     if (day === '24') {
       document.getElementById('login').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
+      setTimeout(() => {
+        showElementsWithAnimation();
+        laadMotiverendeQuote();
+        laadRandomKat();
+      }, 100);
     } else {
       error.classList.remove('hidden');
       setTimeout(() => error.classList.add('hidden'), 3000);
@@ -184,139 +500,172 @@
   }
 
   function closeModal(id) {
-  const modal = document.getElementById(id);
-  modal.classList.add('hidden');
-  modal.classList.remove('modal-open');
-}
+    const modal = document.getElementById(id);
+    modal.classList.add('hidden');
+    modal.classList.remove('modal-open');
+  }
 
   function openModal(id) {
-  const modal = document.getElementById(id);
-  modal.classList.remove('hidden');
-  modal.classList.add('modal-open');
-}
+    const modal = document.getElementById(id);
+    modal.classList.remove('hidden');
+    modal.classList.add('modal-open');
+  }
 
-async function laadSamenvattingen(vak) {
+  async function laadSamenvattingen(vak) {
     const apiURL = "https://script.google.com/macros/s/AKfycbxIysg_We_EwYDM7gON32la6hevsNJdtCetHc8uJ-AdFAFSllAYSRinzWE-tLQVS_9-3A/exec?vak=" + vak.toLowerCase();
 
     try {
-    const response = await fetch(apiURL);
-    const data = await response.json();
-    console.log("Reactie van server ontvangen:", data);
+      const response = await fetch(apiURL);
+      const data = await response.json();
+      console.log("Reactie van server ontvangen:", data);
 
-    const list = document.getElementById('summaryList');
-    list.innerHTML = '';
-    openModal('summaryModal');
+      const list = document.getElementById('summaryList');
+      list.innerHTML = '';
+      openModal('summaryModal');
 
-    data.forEach(doc => {
-      const parts = doc.titel.split('|');
-      const titel = parts[0]?.trim() || 'Onbekend';
-      const link = parts[1]?.trim();
+      data.forEach(doc => {
+        const parts = doc.titel.split('|');
+        const titel = parts[0]?.trim() || 'Onbekend';
+        const link = parts[1]?.trim();
 
-      if (!link) return; // skip als geen geldige link
+        if (!link) return; // skip als geen geldige link
 
-      const card = document.createElement('button');
-      card.className = 'bg-white p-4 rounded-xl shadow hover:scale-105 transition-all text-center';
-      card.innerText = `✨ ${titel} ✨`;
-      card.onclick = async () => {
-        // rechtstreeks iframe gebruiken zonder fetch
-        document.getElementById('docTitle').innerText = `✨ ${titel} ✨`;
-        document.getElementById('summaryContent').innerHTML = `
-        <div class="w-full h-full flex justify-center items-center">
-            <iframe src="${link}" 
-            class="rounded-2xl shadow-lg border-0" 
-            style="width: 65vw; height: 90%; background-color: #ffe4e1;" 
-            frameborder="0">
-            </iframe>
-        </div>
-        `;
-        openModal('contentModal');
-      };
-      list.appendChild(card);
-    });
-  } catch (err) {
-    console.error("Fout bij laden van samenvattingen:", err);
-  }
-}
-
-async function laadMotiverendeQuote() {
-  const container = document.getElementById("quoteContainer");
-
-  try {
-    const res = await fetch("https://api.froje.be/api/quote");
-    const data = await res.json();
-    container.innerHTML = `🌟 "${data.q}" — <strong>${data.a}</strong>`;
-  } catch (e) {
-    container.innerText = "🌟 Falen bestaat niet, alleen feedback 🌟";
-  }
-}
-
-async function laadRandomKat() {
-  const img = document.getElementById("catImage");
-
-  try {
-    const res = await fetch("https://api.thecatapi.com/v1/images/search");
-    const data = await res.json();
-    if (Array.isArray(data) && data.length > 0 && data[0].url) {
-      img.src = data[0].url;
-    } else {
-      throw new Error("No image found");
+        const card = document.createElement('div');
+        card.className = 'bg-white p-4 rounded-xl shadow hover:shadow-lg transition-all text-center relative overflow-hidden';
+        
+        // Add a decorative touch
+        const decorator = document.createElement('div');
+        decorator.className = 'absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-pink-400 to-pink-600';
+        card.appendChild(decorator);
+        
+        // Clickable button
+        const button = document.createElement('button');
+        button.className = 'w-full h-full p-3 pl-6 text-left font-medium flex items-center';
+        button.innerHTML = `<span class="text-pink-500 mr-2">📄</span> ${titel}`;
+        button.onclick = async () => {
+          document.getElementById('docTitle').innerText = `✨ ${titel} ✨`;
+          document.getElementById('summaryContent').innerHTML = `
+          <div class="w-full h-full flex justify-center items-center">
+              <iframe src="${link}" 
+              class="rounded-2xl shadow-lg border-0" 
+              style="width: 65vw; height: 90%; background-color: #fff0f5;" 
+              frameborder="0">
+              </iframe>
+          </div>
+          `;
+          closeModal('summaryModal');
+          openModal('contentModal');
+        };
+        
+        card.appendChild(button);
+        list.appendChild(card);
+      });
+    } catch (err) {
+      console.error("Fout bij laden van samenvattingen:", err);
     }
-  } catch (e) {
-    img.alt = "Kon geen kat laden 😿";
-    img.src = "https://cataas.com/cat/says/Oeps";
   }
-}
 
-// Laad quote wanneer dashboard zichtbaar wordt
-document.addEventListener("DOMContentLoaded", () => {
-  const dayInput = document.getElementById('dayInput');
-  dayInput.addEventListener("input", () => {
-    if (dayInput.value === "24") {
-      setTimeout(laadMotiverendeQuote, 100);
+  async function laadMotiverendeQuote() {
+    const container = document.getElementById("quoteContainer");
+
+    try {
+      const res = await fetch("https://api.froje.be/api/quote");
+      const data = await res.json();
+      container.innerHTML = `
+        <p class="text-lg mb-4">🌟 "${data.q}"</p>
+        <p class="text-right font-bold">— ${data.a}</p>
+      `;
+    } catch (e) {
+      container.innerHTML = `
+        <p class="text-lg mb-4">🌟 "Falen bestaat niet, alleen feedback" 🌟</p>
+        <p class="text-right font-bold">— Wijsheid van de dag</p>
+      `;
+    }
+  }
+
+  async function laadRandomKat() {
+    const img = document.getElementById("catImage");
+
+    try {
+      const res = await fetch("https://api.thecatapi.com/v1/images/search");
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0 && data[0].url) {
+        img.src = data[0].url;
+      } else {
+        throw new Error("No image found");
+      }
+    } catch (e) {
+      img.alt = "Kon geen kat laden 😿";
+      img.src = "https://cataas.com/cat/says/Oeps";
+    }
+  }
+
+  async function toonPresentatie() {
+    const titel = document.getElementById("docTitle").innerText.replace(/✨/g, "").trim().toLowerCase();
+
+    const apiURL = "https://script.google.com/macros/s/AKfycbzTNV7R6_MTfIctCtnrxaSF1cYzjlyOzqg8vDpkVMxpkC4D-QYH1vFtDAvZGUj6rzE4/exec?vak=presentaties/";
+
+    try {
+      const response = await fetch(apiURL);
+      const data = await response.json();
+
+      const match = data.find(doc => {
+        const [docTitel] = doc.titel.split("|");
+        return docTitel.trim().toLowerCase() === titel;
+      });
+
+      if (match) {
+        const parts = match.titel.split("|");
+        const embedUrl = parts[1]?.trim();
+        if (embedUrl) {
+          document.getElementById("presentationIframe").src = embedUrl;
+          closeModal("contentModal");
+          openModal("presentationModal");
+        } else {
+          showNotification("Er is geen geldige link gevonden voor deze presentatie.");
+        }
+      } else {
+        showNotification("Geen presentatie gevonden 😢");
+      }
+    } catch (err) {
+      console.error("Fout bij het ophalen van presentatie:", err);
+      showNotification("Kon de presentatie niet laden 😢");
+    }
+  }
+
+  function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'fixed bottom-4 right-4 bg-white rounded-lg shadow-lg p-4 text-pink-700 z-50 fade-in';
+    notification.innerHTML = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 500);
+    }, 3000);
+  }
+
+  // Initialize event listeners
+  document.addEventListener("DOMContentLoaded", () => {
+    const dayInput = document.getElementById('dayInput');
+    if (dayInput) {
+      dayInput.addEventListener("keyup", (event) => {
+        if (event.key === "Enter") {
+          checkLogin();
+        }
+      });
+    }
+    
+    // Load cat image when available
+    const catImg = document.getElementById("catImage");
+    if (catImg) {
+      catImg.addEventListener('error', () => {
+        catImg.src = "https://cataas.com/cat/says/Oeps";
+      });
     }
   });
-});
-
-
-async function toonPresentatie() {
-  const titel = document.getElementById("docTitle").innerText.replace(/✨/g, "").trim().toLowerCase();
-
-  const apiURL = "https://script.google.com/macros/s/AKfycbzTNV7R6_MTfIctCtnrxaSF1cYzjlyOzqg8vDpkVMxpkC4D-QYH1vFtDAvZGUj6rzE4/exec?vak=presentaties/";
-  const proxy = "http://localhost:8080/";
-
-  try {
-    const response = await fetch(apiURL);
-    const data = await response.json();
-
-    const match = data.find(doc => {
-      const [docTitel] = doc.titel.split("|");
-      return docTitel.trim().toLowerCase() === titel;
-    });
-
-    if (match) {
-      const parts = match.titel.split("|");
-      const embedUrl = parts[1]?.trim();
-      if (embedUrl) {
-        document.getElementById("presentationIframe").src = embedUrl;
-        openModal("presentationModal");
-      } else {
-        alert("Er is geen geldige link gevonden voor deze presentatie.");
-      }
-    } else {
-      alert("Geen presentatie gevonden 😢");
-    }
-  } catch (err) {
-    console.error("Fout bij het ophalen van presentatie:", err);
-    alert("Kon de presentatie niet laden 😢");
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const catImg = document.getElementById("catImage");
-  if (catImg) {
-    laadRandomKat();
-  }
-});
 </script>
 </body>
 </html>

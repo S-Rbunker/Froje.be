@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Snoopie 🎀</title>
+    <link rel="stylesheet" href="chat.css">
+    <!-- Authentication check before showing content -->
+    <script>
+      (async function () {
+        try {
+          const res = await fetch('https://api.froje.be/user', { credentials: 'include' });
+          if (!res.ok) throw new Error();
+          
+          const user = await res.json();
+          if (user.id !== "VZc7vn2XK5b7ubR2titjnGmBRJtUfQR8") throw new Error();
+          
+          // ✅ Auth passed, show page and restore anchor jump
+          // Fix for anchor links not scrolling correctly after delayed display
+          if (window.location.hash) {
+            const target = document.querySelector(window.location.hash);
+            if (target) {
+              setTimeout(() => target.scrollIntoView({ behavior: 'smooth' }), 100);
+            }
+          }
+        } catch (e) {
+          const fullPath = window.location.pathname + window.location.search + window.location.hash;
+          sessionStorage.setItem("loginRedirect", fullPath);
+          window.location.href = '/login?redirect=' + encodeURIComponent(fullPath);
+        }
+      })();
+    </script>
+    <!-- Add MathJax 3 for rendering mathematical expressions -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        svg: {
+          fontCache: 'global'
+        },
+        startup: {
+          typeset: false // We'll trigger typesetting manually after content is added
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="chat.js" defer></script>
+    <link rel="icon" type="image/x-icon" href="/Rbunker music logo youtube.ico">
+</head>
+<body>
+<div class="chat-container">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>📚 Vakken</h2>
+    <div id="sidebarSubjects" class="folders"></div>
+  </aside>
+
+  <!-- Chat Area -->
+  <main class="chat-area">
+    <div id="messages" class="messages"></div>
+
+    <form id="messageForm" class="input-area">
+      <!-- Image preview container (now shows multiple images in a grid) -->
+      <div id="imagePreviewContainer" style="display:none;"></div>
+      
+      <!-- Text input and buttons area -->
+      <div class="input-wrapper">
+        <textarea id="userInput" placeholder="Typ je bericht 🎀" required></textarea>
+        
+        <div class="controls">
+          <label for="imageUpload" class="upload-btn" title="Afbeeldingen toevoegen">📷</label>
+          <button type="submit" class="send-btn" title="Versturen">🌸</button>
+        </div>
+      </div>
+      
+      <!-- Hidden file input (now accepts multiple files) -->
+      <input type="file" id="imageUpload" accept="image/*" multiple hidden>
+    </form>
+    
+    <!-- Modals -->
+    <div id="modalBackdrop" class="modal-backdrop" style="display:none;"></div>
+
+    <div id="nameModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3>Nieuw Gesprek 🎀</h3>
+        <input type="text" id="newTitleInput" placeholder="Voer een titel in...">
+        <div class="modal-actions">
+          <button onclick="confirmNewConversation()">Oké</button>
+          <button onclick="closeModal()">Annuleren</button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="deleteModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3>Gesprek Verwijderen 🗑️</h3>
+        <p>Weet je zeker dat je dit gesprek wilt verwijderen?</p>
+        <div class="modal-actions">
+          <button onclick="confirmDelete()">Verwijderen</button>
+          <button onclick="closeModal()">Annuleren</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Image Modal voor vergrote weergave -->
+    <div id="imageModal" class="image-modal" style="display:none;">
+      <button class="image-modal-close" onclick="closeImageModal()">✕</button>
+      <img id="expandedImage" src="" alt="Vergrote afbeelding">
+    </div>
+  </main>
+</div>
+</body>
+</html>
