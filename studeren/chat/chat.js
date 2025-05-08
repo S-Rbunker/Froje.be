@@ -1454,30 +1454,42 @@ async function loadMessages() {
     console.log("Loaded messages:", data.messages);
     
     data.messages.forEach(msg => {
-      // Verwerk afbeeldingen (één of meerdere)
+      // Log each message's image data for debugging
+      console.log(`Message ${msg._id} image data:`, {
+        hasImageField: !!msg.image,
+        hasImagesArray: Array.isArray(msg.images),
+        imagesArrayLength: Array.isArray(msg.images) ? msg.images.length : 'N/A'
+      });
+      
+      // Process images with a more robust approach
       let imageUrls = [];
       
-      // Controleer of er één afbeelding of meerdere afbeeldingen zijn
-      if (msg.image && typeof msg.image === 'string') {
-        // Enkel afbeelding (oude format)
+      // First try the images array (preferred)
+      if (msg.images && Array.isArray(msg.images) && msg.images.length > 0) {
+        console.log(`Using images array with ${msg.images.length} images`);
+        imageUrls = [...msg.images]; // Make a copy of the array
+      } 
+      // Fall back to single image if images array is empty/missing
+      else if (msg.image && typeof msg.image === 'string') {
+        console.log(`Using single image field: ${msg.image}`);
         imageUrls.push(msg.image);
-      } else if (msg.images && Array.isArray(msg.images)) {
-        // Meerdere afbeeldingen (nieuwe format)
-        imageUrls = msg.images;
       }
       
-      // Toon bericht in UI
+      // Log the final image URLs being used
+      console.log(`Final imageUrls for message: ${imageUrls.length} images`);
+      
+      // Show message in UI
       appendMessage(msg.role, msg.content, imageUrls);
       
-      // Voeg toe aan conversatiegeschiedenis met correcte Gemini structuur
+      // Add to conversation history with correct Gemini structure
       const formattedMsg = createGeminiMessage(msg.role, msg.content, imageUrls);
       conversationHistory.push(formattedMsg);
     });
     
-    // Scroll naar beneden na het laden van berichten
+    // Scroll down after loading messages
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   } catch (err) {
-    console.error("Laden mislukt:", err);
+    console.error("Loading failed:", err);
     showInfo("Fout bij laden van gesprek 😢 " + err.message);
   }
 }
