@@ -108,6 +108,405 @@ let typingTimeout = null;
 let currentSubjectForNew = null;
 let conversationHistory = [];
 
+function initMobileSupport() {
+  // Check if we're on mobile
+  const isMobile = window.innerWidth <= 768;
+  
+  // Only initialize mobile elements if we're on a mobile device
+  if (isMobile) {
+    initMobileSidebar();
+    enhanceMobileTouchInteractions();
+    
+    // Handle orientation changes
+    window.addEventListener('orientationchange', function() {
+      // Re-initialize mobile support after orientation change
+      setTimeout(() => {
+        initMobileSidebar();
+        enhanceMobileTouchInteractions();
+        adjustAfterOrientationChange();
+      }, 300);
+    });
+  } else {
+    // Remove any mobile-specific elements if on desktop
+    removeMobileElements();
+  }
+  
+  // Listen for window resize events to add/remove mobile support
+  window.addEventListener('resize', debounce(function() {
+    const nowMobile = window.innerWidth <= 768;
+    if (nowMobile && !isMobile) {
+      initMobileSidebar();
+      enhanceMobileTouchInteractions();
+    } else if (!nowMobile && isMobile) {
+      removeMobileElements();
+    }
+  }, 250));
+}
+
+// Simple debounce function to prevent excessive resize handling
+function debounce(func, wait) {
+  let timeout;
+  return function() {
+    const context = this;
+    const args = arguments;
+    clearTimeout(timeout);
+    timeout = setTimeout(function() {
+      func.apply(context, args);
+    }, wait);
+  };
+}
+
+// Clean up mobile elements when not needed
+function removeMobileElements() {
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  
+  if (sidebarToggle) sidebarToggle.remove();
+  if (sidebarOverlay) sidebarOverlay.remove();
+}
+
+// Handle things that need adjustment after orientation change
+function adjustAfterOrientationChange() {
+  // Re-adjust textarea height
+  if (userInput) {
+    userInput.style.height = 'auto';
+    userInput.style.height = Math.min(100, userInput.scrollHeight) + 'px';
+  }
+  
+  // Ensure messages scroll to bottom
+  if (messagesDiv) {
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+  
+  // Reset sidebar state
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar) {
+    if (window.innerWidth > 768) {
+      sidebar.classList.remove('active');
+      document.body.style.overflow = '';
+      const overlay = document.getElementById('sidebarOverlay');
+      if (overlay) overlay.classList.remove('active');
+    }
+  }
+}
+
+// Initialize mobile sidebar functionality
+function initMobileSidebar() {
+  // Create sidebar toggle button if it doesn't exist
+  if (!document.getElementById('sidebarToggle')) {
+    const sidebarToggle = document.createElement('button');
+    sidebarToggle.id = 'sidebarToggle';
+    sidebarToggle.className = 'sidebar-toggle';
+    sidebarToggle.innerHTML = '☰';
+    sidebarToggle.setAttribute('aria-label', 'Menu');
+    document.querySelector('.chat-container').prepend(sidebarToggle);
+  }
+  
+  // Create sidebar overlay if it doesn't exist
+  if (!document.getElementById('sidebarOverlay')) {
+    const sidebarOverlay = document.createElement('div');
+    sidebarOverlay.id = 'sidebarOverlay';
+    sidebarOverlay.className = 'sidebar-overlay';
+    document.querySelector('.chat-container').appendChild(sidebarOverlay);
+  }
+  
+  // Set up event listeners
+  setupMobileSidebarEvents();
+  
+  // Make sure sidebar is initially hidden on mobile
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar) {
+    sidebar.classList.remove('active');
+  }
+}
+
+// Set up event listeners for mobile sidebar
+function setupMobileSidebarEvents() {
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebar = document.querySelector('.sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  
+  if (sidebarToggle && sidebar && sidebarOverlay) {
+    // Add event listeners (using named functions instead of anonymous ones)
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', closeSidebar);
+    
+    // Close sidebar when clicking on a conversation (delegate to parent)
+    const sidebarSubjects = document.getElementById('sidebarSubjects');
+    if (sidebarSubjects) {
+      sidebarSubjects.addEventListener('click', function(e) {
+        if (e.target.closest('.conversation-item') && window.innerWidth <= 768) {
+          closeSidebar();
+        }
+      });
+    }
+  }
+}
+
+// Toggle sidebar open/closed
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  
+  if (sidebar && sidebarOverlay) {
+    sidebar.classList.toggle('active');
+    sidebarOverlay.classList.toggle('active');
+    
+    // Prevent body scrolling when sidebar is open
+    if (sidebar.classList.contains('active')) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+}
+
+// Close sidebar
+function closeSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  
+  if (sidebar && sidebarOverlay) {
+    sidebar.classList.remove('active');
+    sidebarOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+// Enhance mobile touch interactions
+function enhanceMobileTouchInteractions() {
+  // Fix remove image button functionality
+  fixImageRemoveButtons();
+  
+  // Ensure textarea is visible and scrolled into view
+  improveInputVisibility();
+  
+  // Fix modal swipe dismissal
+  enhanceMobileModals();
+  
+  // Ensure sidebar is fully scrollable
+  improveSidebarScrolling();
+  
+  // Add double-tap to zoom for images
+  addDoubleTapToZoom();
+}
+
+// Fix issues with image removal on mobile
+function fixImageRemoveButtons() {
+  // Add a global delegated event handler to make remove buttons work
+  document.addEventListener('touchstart', function(e) {
+    const removeBtn = e.target.closest('.remove-preview-btn');
+    if (removeBtn) {
+      e.preventDefault(); // Prevent default touch behavior
+      
+      // Find the index of this image
+      const wrapper = removeBtn.closest('.image-preview-wrapper');
+      const grid = wrapper.parentElement;
+      const wrappers = Array.from(grid.querySelectorAll('.image-preview-wrapper'));
+      const index = wrappers.indexOf(wrapper);
+      
+      // Call the existing removeImage function with the index
+      if (index !== -1 && typeof removeImage === 'function') {
+        removeImage(index);
+      }
+    }
+  }, { passive: false });
+  
+  // Make the buttons larger on mobile for easier tapping
+  const removeButtons = document.querySelectorAll('.remove-preview-btn');
+  removeButtons.forEach(btn => {
+    btn.style.width = '32px';
+    btn.style.height = '32px';
+    btn.style.fontSize = '16px';
+  });
+}
+
+// Ensure the input area is visible when needed
+function improveInputVisibility() {
+  // Ensure the userInput element is focused and visible when needed
+  if (userInput) {
+    // Make sure initial input is visible on load
+    setTimeout(() => {
+      if (messageForm && messageForm.style.display !== 'none') {
+        messageForm.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 500);
+    
+    // Auto-scroll to input when focused
+    userInput.addEventListener('focus', function() {
+      setTimeout(() => {
+        this.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    });
+    
+    // Adjust height on input
+    userInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(100, this.scrollHeight) + 'px';
+    });
+  }
+  
+  // Handle virtual keyboard better
+  if ('virtualKeyboard' in navigator) {
+    navigator.virtualKeyboard.overlaysContent = true;
+    
+    navigator.virtualKeyboard.addEventListener('geometrychange', event => {
+      const { height } = event.target.boundingRect;
+      
+      if (height > 0) {
+        // Virtual keyboard is showing
+        setTimeout(() => {
+          if (userInput) userInput.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    });
+  }
+}
+
+// Enhance modals for mobile
+function enhanceMobileModals() {
+  const modals = document.querySelectorAll('.modal');
+  if (modals.length > 0) {
+    modals.forEach(modal => {
+      let touchStartY = 0;
+      
+      modal.addEventListener('touchstart', function(e) {
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+      
+      modal.addEventListener('touchmove', function(e) {
+        const touchY = e.touches[0].clientY;
+        const diff = touchY - touchStartY;
+        
+        // If swiping down, start closing the modal
+        if (diff > 50) {
+          modal.style.transform = `translate(-50%, ${diff - 50}px)`;
+          modal.style.opacity = 1 - (diff / 300);
+        }
+      });
+      
+      modal.addEventListener('touchend', function(e) {
+        const touchY = e.changedTouches[0].clientY;
+        const diff = touchY - touchStartY;
+        
+        // If swiped down far enough, close the modal
+        if (diff > 100) {
+          if (typeof closeModal === 'function') {
+            closeModal();
+          }
+        }
+        
+        // Reset position and opacity
+        modal.style.transform = 'translate(-50%, -50%)';
+        modal.style.opacity = '1';
+      });
+    });
+  }
+  
+  // Make sure inputs work properly in modals
+  const modalInputs = document.querySelectorAll('.modal input');
+  modalInputs.forEach(input => {
+    input.style.fontSize = '16px'; // Prevent iOS zoom on focus
+  });
+}
+
+// Add double-tap to zoom for images
+function addDoubleTapToZoom() {
+  let lastTap = 0;
+  
+  // Use event delegation for better performance
+  document.addEventListener('touchend', function(e) {
+    const messageImg = e.target.closest('.message-img');
+    if (messageImg) {
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap;
+      
+      if (tapLength < 300 && tapLength > 0) {
+        // Double tap detected
+        e.preventDefault();
+        const src = messageImg.getAttribute('src');
+        if (src && typeof expandImage === 'function') {
+          expandImage(src);
+        }
+      }
+      
+      lastTap = currentTime;
+    }
+  });
+}
+
+// Ensure sidebar is fully scrollable
+function improveSidebarScrolling() {
+  const sidebar = document.querySelector('.sidebar');
+  const sidebarSubjects = document.getElementById('sidebarSubjects');
+  
+  if (sidebar && sidebarSubjects) {
+    // Add extra padding to ensure all items are scrollable
+    sidebarSubjects.style.paddingBottom = '100px';
+    
+    // Make sure iOS handles scrolling properly
+    sidebar.style.webkitOverflowScrolling = 'touch';
+    
+    // Add a "scroll to bottom" helper that shows only on mobile
+    const scrollHelper = document.createElement('div');
+    scrollHelper.className = 'scroll-helper';
+    scrollHelper.innerHTML = '👇 Scroll voor meer vakken';
+    scrollHelper.style.cssText = `
+      position: absolute;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.9);
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      z-index: 31;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      color: var(--accent-color);
+    `;
+    
+    sidebar.appendChild(scrollHelper);
+    
+    // Show helper briefly when sidebar opens
+    const originalToggle = toggleSidebar;
+    window.toggleSidebar = function() {
+      if (typeof originalToggle === 'function') {
+        originalToggle();
+      } else {
+        // Fallback if original function not available
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        if (sidebar && sidebarOverlay) {
+          sidebar.classList.toggle('active');
+          sidebarOverlay.classList.toggle('active');
+        }
+      }
+      
+      const sidebarElement = document.querySelector('.sidebar');
+      if (sidebarElement && sidebarElement.classList.contains('active')) {
+        // Check if scrolling is needed
+        if (sidebarSubjects.scrollHeight > sidebar.clientHeight) {
+          scrollHelper.style.display = 'block';
+          setTimeout(() => {
+            scrollHelper.style.opacity = '1';
+          }, 100);
+          
+          // Hide after 3 seconds
+          setTimeout(() => {
+            scrollHelper.style.opacity = '0';
+            setTimeout(() => {
+              scrollHelper.style.display = 'none';
+            }, 300);
+          }, 3000);
+        }
+      }
+    };
+  }
+}
+
 function formatUserText(text) {
   // Escape HTML in user text and convert newlines to <br>
   return text
@@ -271,6 +670,8 @@ function applyTheme(subject) {
   // Show a subtle notification about the theme change
   showThemeChangeNotification(subject, theme.emoji);
 }
+
+
 
 function initMobileSidebarSupport() {
   // Create and add the sidebar toggle button if it doesn't exist
@@ -825,9 +1226,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Check if it's a valid subject
   const validSubjects = Object.keys(subjectThemes);
 
-  addMobileStyles();
-  initMobileSidebarSupport();
-  addMobileEventHandlers();
+  initMobileSupport();
   
   if (validSubjects.includes(pathSubject)) {
     // Apply theme for this subject
