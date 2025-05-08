@@ -272,6 +272,312 @@ function applyTheme(subject) {
   showThemeChangeNotification(subject, theme.emoji);
 }
 
+function initMobileSidebarSupport() {
+  // Create and add the sidebar toggle button if it doesn't exist
+  if (!document.getElementById('sidebarToggle')) {
+    const sidebarToggle = document.createElement('button');
+    sidebarToggle.id = 'sidebarToggle';
+    sidebarToggle.className = 'sidebar-toggle';
+    sidebarToggle.innerHTML = '☰';
+    sidebarToggle.setAttribute('aria-label', 'Menu');
+    document.querySelector('.chat-container').prepend(sidebarToggle);
+  }
+
+  // Create sidebar overlay if it doesn't exist
+  if (!document.getElementById('sidebarOverlay')) {
+    const sidebarOverlay = document.createElement('div');
+    sidebarOverlay.id = 'sidebarOverlay';
+    sidebarOverlay.className = 'sidebar-overlay';
+    document.querySelector('.chat-container').appendChild(sidebarOverlay);
+  }
+
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebar = document.querySelector('.sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  
+  if (sidebarToggle && sidebar && sidebarOverlay) {
+    // Toggle sidebar when button is clicked
+    sidebarToggle.addEventListener('click', function() {
+      sidebar.classList.toggle('active');
+      sidebarOverlay.classList.toggle('active');
+    });
+    
+    // Close sidebar when clicking the overlay
+    sidebarOverlay.addEventListener('click', function() {
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    });
+  }
+  
+  // Auto-close sidebar when a conversation is selected (on mobile)
+  document.addEventListener('click', function(e) {
+    const conversationItem = e.target.closest('.conversation-item');
+    if (conversationItem && window.innerWidth <= 768) {
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    }
+  });
+}
+
+// Add mobile-specific event handlers
+function addMobileEventHandlers() {
+  // Add double-tap to zoom for images in messages
+  let lastTap = 0;
+  messagesDiv.addEventListener('touchend', function(e) {
+    const messageImg = e.target.closest('.message-img');
+    if (messageImg) {
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap;
+      if (tapLength < 300 && tapLength > 0) {
+        // Double tap detected
+        e.preventDefault();
+        const src = messageImg.getAttribute('src');
+        if (src) {
+          expandImage(src);
+        }
+      }
+      lastTap = currentTime;
+    }
+  });
+  
+  // Better touch handling for image previews
+  if (imagePreviewContainer) {
+    // Add touch-specific handling for image interaction on mobile
+    imagePreviewContainer.addEventListener('touchstart', function(e) {
+      // Prevent default only if touching a button to avoid scroll blocking
+      if (e.target.tagName === 'BUTTON') {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  }
+  
+  // Make modals more mobile-friendly with swipe to dismiss
+  const modals = document.querySelectorAll('.modal');
+  if (modals.length > 0) {
+    modals.forEach(modal => {
+      let touchStartY = 0;
+      
+      modal.addEventListener('touchstart', function(e) {
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+      
+      modal.addEventListener('touchmove', function(e) {
+        const touchY = e.touches[0].clientY;
+        const diff = touchY - touchStartY;
+        
+        // If swiping down, start closing the modal
+        if (diff > 50) {
+          modal.style.transform = `translate(-50%, ${diff - 50}px)`;
+          modal.style.opacity = 1 - (diff / 300);
+        }
+      });
+      
+      modal.addEventListener('touchend', function(e) {
+        const touchY = e.changedTouches[0].clientY;
+        const diff = touchY - touchStartY;
+        
+        // If swiped down far enough, close the modal
+        if (diff > 100) {
+          closeModal();
+        }
+        
+        // Reset position and opacity
+        modal.style.transform = 'translate(-50%, -50%)';
+        modal.style.opacity = 1;
+      });
+    });
+  }
+  
+  // Handle orientation changes better
+  window.addEventListener('orientationchange', function() {
+    // Slight delay to let the browser adjust
+    setTimeout(function() {
+      // Re-adjust the textarea height if needed
+      if (userInput) {
+        userInput.style.height = 'auto';
+        userInput.style.height = Math.min(100, userInput.scrollHeight) + 'px';
+      }
+      
+      // Re-check window size and update UI accordingly
+      if (window.innerWidth > 768) {
+        document.querySelector('.sidebar').classList.remove('active');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+      }
+      
+      // Re-scroll to bottom of messages
+      if (messagesDiv) {
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }
+    }, 200);
+  });
+  
+  // Better handling of virtual keyboard on mobile
+  if ('virtualKeyboard' in navigator) {
+    navigator.virtualKeyboard.overlaysContent = true;
+    
+    navigator.virtualKeyboard.addEventListener('geometrychange', event => {
+      const { height } = event.target.boundingRect;
+      
+      if (height > 0) {
+        // Virtual keyboard is showing
+        document.body.style.paddingBottom = height + 'px';
+        // Scroll to the input area to keep it visible
+        userInput.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        // Virtual keyboard is hidden
+        document.body.style.paddingBottom = '0';
+      }
+    });
+  } else {
+    // Fallback for browsers without virtualKeyboard API
+    userInput.addEventListener('focus', function() {
+      setTimeout(() => {
+        userInput.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    });
+  }
+}
+
+// Add mobile-specific CSS
+function addMobileStyles() {
+  const style = document.createElement('style');
+  if (!document.querySelector('#mobile-styles')) {
+    style.id = 'mobile-styles';
+    style.innerHTML = `
+      /* Mobile sidebar toggle */
+      .sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+        z-index: 35;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s;
+      }
+
+      .sidebar-toggle:hover {
+        background: var(--accent-color);
+        transform: scale(1.05);
+      }
+
+      /* Sidebar overlay */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 25;
+      }
+
+      .sidebar-overlay.active {
+        display: block;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        /* Show sidebar toggle */
+        .sidebar-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        /* Make sidebar a slide-out panel */
+        .chat-container {
+          flex-direction: column;
+          position: relative;
+        }
+        
+        .sidebar {
+          position: fixed;
+          left: -100%;
+          top: 0;
+          bottom: 0;
+          width: 85%;
+          max-width: 300px;
+          z-index: 30;
+          transition: left 0.3s ease-in-out;
+          border-right: none;
+          border-radius: 0 10px 10px 0;
+          box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+          padding-top: 45px;
+        }
+        
+        .sidebar.active {
+          left: 0;
+        }
+        
+        /* Info message positioning (to avoid overlap with toggle button) */
+        .bubble.info {
+          margin-top: 30px;
+          margin-left: 40px;
+          max-width: calc(100% - 60px);
+        }
+
+        /* Improve chat area for mobile */
+        .chat-area {
+          width: 100%;
+        }
+        
+        .bubble {
+          max-width: 85%;
+          padding: 0.8rem;
+        }
+        
+        .assistant-bubble {
+          max-width: 90%;
+          padding: 1rem;
+        }
+        
+        /* Improve message display */
+        .message {
+          padding: 0 5px;
+        }
+        
+        /* Enhanced image handling for mobile */
+        .image-grid {
+          grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+          gap: 8px;
+        }
+        
+        .message-images-grid {
+          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+          gap: 8px;
+        }
+        
+        /* Adjust input area for mobile */
+        .input-area {
+          padding: 10px;
+        }
+        
+        /* Improve touch targets for mobile */
+        .upload-btn, .send-btn {
+          width: 44px;
+          height: 44px;
+          font-size: 1.2rem;
+        }
+        
+        .remove-preview-btn {
+          width: 28px;
+          height: 28px;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
 // Function to show a theme change notification
 function showThemeChangeNotification(subject, emoji) {
   // Create notification element if it doesn't exist
@@ -518,6 +824,10 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Check if it's a valid subject
   const validSubjects = Object.keys(subjectThemes);
+
+  addMobileStyles();
+  initMobileSidebarSupport();
+  addMobileEventHandlers();
   
   if (validSubjects.includes(pathSubject)) {
     // Apply theme for this subject

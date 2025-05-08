@@ -2,7 +2,7 @@
 <html lang="nl">
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Snoopie 🎀</title>
     <link rel="stylesheet" href="chat.css">
     <!-- Authentication check before showing content -->
@@ -53,8 +53,14 @@
 <body>
 <div class="chat-container">
 
+  <!-- Mobile Sidebar Toggle Button -->
+  <button id="sidebarToggle" class="sidebar-toggle">☰</button>
+  
+  <!-- Sidebar Overlay (mobile only) -->
+  <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
   <!-- Sidebar -->
-  <aside class="sidebar">
+  <aside id="sidebar" class="sidebar">
     <h2>📚 Vakken</h2>
     <div id="sidebarSubjects" class="folders"></div>
   </aside>
