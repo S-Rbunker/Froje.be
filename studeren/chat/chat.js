@@ -93,8 +93,6 @@ const course = urlParams.get('course');
 const conversationId = urlParams.get('conversationId');
 
 const BACKEND_URL = "https://chat.froje.be/api";
-const API_URL = "https://openrouter.ai/api/v1/chat/completions";
-const API_KEY = "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";
 const MAX_IMAGES = 10; // Maximum aantal afbeeldingen per bericht
 
 const messagesDiv = document.getElementById('messages');
@@ -1018,15 +1016,12 @@ Zorg ervoor dat je antwoord ALTIJD goed gestructureerd is met HTML zonder fouten
   };
 
   try {
-    console.log("Sending payload to OpenRouter:", JSON.stringify(payload, null, 2));
+    console.log("Sending payload to backend proxy:", JSON.stringify(payload, null, 2));
     
-    const res = await fetch(API_URL, {
+    const res = await fetch(`${BACKEND_URL}/chat`, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${API_KEY}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": window.location.origin, // Add the referer header
-        "X-Title": "Frojie's Studeren" // Add an application title
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(payload)
     });
