@@ -1788,7 +1788,8 @@ Je antwoorden moeten in het Nederlands zijn, helder en aantrekkelijk vormgegeven
   <strong>Let op:</strong> Ga nooit afwijken van deze opmaakregels. Alle antwoorden moeten consequent deze structuur en kleurstelling volgen.
 </div>
 `
-  };
+};
+
   
   // Build messages array 
   let messages = [systemMessage];
