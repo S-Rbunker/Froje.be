@@ -1685,7 +1685,7 @@ messageForm.addEventListener("submit", async (e) => {
 - Gebruik <table>, <tr>, <th>, <td> voor tabellen bij overzichtelijke data of vergelijkingen.
 - Gebruik onderstaande speciale blokken waar gepast:
 
-```html
+
 <div class="definition-box">...</div>      → Voor definities
 <div class="example-box">...</div>         → Voor voorbeelden
 <div class="important-box">...</div>       → Voor belangrijke informatie of waarschuwingen
