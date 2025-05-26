@@ -1676,28 +1676,25 @@ messageForm.addEventListener("submit", async (e) => {
   // Prepare system message
   const systemMessage = {
     role: "system",
-    content: `Geef antwoord in het Nederlands 🇳🇱 met emojis 🎀🌸 en gebruik rijke HTML om je antwoord te structureren.
-Je MOET HTML gebruiken voor tabellen, lijsten, titels, kleuren, etc. Gebruik sterke structuur om studenten te helpen.
-Gebruik verschillende secties, koppen en subkoppen om je antwoord op te bouwen.
-Geef gestructureerde informatie die makkelijk te leren is. Style belangrijke begrippen in bold met <strong> of in een andere kleur met CSS styles.
+    content: `Beantwoord in het Nederlands met behulp van visuele elementen zoals emoji’s 🎀🌸, maar zonder te overdrijven. Gebruik duidelijke en rijke HTML-opmaak om het antwoord helder, educatief en aantrekkelijk te maken voor studenten.
 
-Als de gebruiker afbeeldingen heeft geüpload, bekijk ze allemaal en reageer specifiek op de inhoud ervan.
-Als het meerdere afbeeldingen zijn, beschrijf elke afbeelding apart en geef je analyse van het geheel.
-Als het een studieopgave is, los deze op en toon de stappen of het antwoord overzichtelijk.
-Als het een vraag in het Frans is, antwoord dan in het Nederlands maar gebruik Franse voorbeelden in je uitleg.
+✅ Structuurvereisten:
+- Gebruik altijd HTML-elementen voor een goed gestructureerd antwoord.
+- Gebruik <h1>, <h2>, <h3> voor titels en subtitels.
+- Gebruik <ul>, <ol>, <li> voor opsommingen en stappenplannen.
+- Gebruik <table>, <tr>, <th>, <td> voor tabellen bij overzichtelijke data of vergelijkingen.
+- Gebruik onderstaande speciale blokken waar gepast:
 
-Gebruik HTML-elementen zoals:
-- <h1>, <h2>, <h3> voor titels en subtitels
-- <table>, <tr>, <th>, <td> voor tabellen
-- <ul>, <ol>, <li> voor lijsten
-- <div class="definition-box">, <div class="example-box">, <div class="important-box"> voor speciale kaders
-- <span class="vocab">...term...</span> voor belangrijke termen
-- <div class="formula">...formule...</div> voor formules
-- <div class="study-card">...</div> voor studiekaarten
-- <div class="summary-section">...</div> voor samenvattingen
-- <div class="key-point">...</div> voor kernpunten
-
-Zorg ervoor dat je antwoord ALTIJD goed gestructureerd is met HTML zonder fouten.`
+```html
+<div class="definition-box">...</div>      → Voor definities
+<div class="example-box">...</div>         → Voor voorbeelden
+<div class="important-box">...</div>       → Voor belangrijke informatie of waarschuwingen
+<div class="formula">...</div>             → Voor wiskundige of scheikundige formules
+<div class="study-card">...</div>          → Voor leerkaartjes of kernsamenvattingen
+<div class="summary-section">...</div>     → Voor een afsluitende samenvatting
+<div class="key-point">...</div>           → Voor cruciale leerpunten
+<span class="vocab">...</span>             → Voor belangrijke termen of woordenschat
+`
   };
   
   // Build messages array 
@@ -1732,7 +1729,7 @@ Zorg ervoor dat je antwoord ALTIJD goed gestructureerd is met HTML zonder fouten
   const loadingId = showLoadingIndicator();
 
   const payload = {
-    model: "google/gemini-2.5-flash-preview",
+    model: "google/gemini-2.5-flash-preview-05-20",
     messages: messages
   };
 
