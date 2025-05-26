@@ -1651,32 +1651,96 @@ function removeLoadingIndicator(loadingId) {
   }
 }
 
+async function makeAPICall(payload, maxRetries = 2) {
+  let lastError;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`API call attempt ${attempt}/${maxRetries}`);
+      
+      const res = await fetch(`${BACKEND_URL}/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload),
+        // Add timeout to the fetch request
+        signal: AbortSignal.timeout(150000) // 2.5 minutes
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error(`API responded with status ${res.status}:`, errorData);
+        
+        // If it's a timeout or network error, retry
+        if (attempt < maxRetries && (
+          res.status === 504 || // Gateway timeout
+          res.status === 503 || // Service unavailable
+          res.status === 429 || // Rate limit
+          errorData.timeout || 
+          errorData.network
+        )) {
+          console.log(`Retrying after ${res.status} error...`);
+          await new Promise(resolve => setTimeout(resolve, 2000 * attempt)); // Exponential backoff
+          continue;
+        }
+        
+        throw new Error(errorData.error || `API responded with status ${res.status}`);
+      }
+      
+      return await res.json();
+      
+    } catch (error) {
+      lastError = error;
+      console.error(`Attempt ${attempt} failed:`, error);
+      
+      // Retry on network errors
+      if (attempt < maxRetries && (
+        error.name === 'TypeError' && error.message.includes('fetch') ||
+        error.name === 'AbortError' ||
+        error.message.includes('network') ||
+        error.message.includes('timeout')
+      )) {
+        console.log(`Retrying after error: ${error.message}`);
+        await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+        continue;
+      }
+      
+      // Don't retry for other errors
+      throw error;
+    }
+  }
+  
+  throw lastError || new Error('All retry attempts failed');
+}
+
+
 // Setup form submission
 messageForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const text = userInput.value.trim();
   
-  // Controleer of er tekst of afbeeldingen zijn
+  // Check if there's text or images
   if (!text && uploadedImages.length === 0) return;
 
   // Clear any info messages when submitting first message
   if (messagesDiv.querySelector('.info')) {
-    messagesDiv.innerHTML = ""; // Clear the info message
+    messagesDiv.innerHTML = "";
   }
 
   // Disable form while processing
   userInput.disabled = true;
   disableImageUploads();
   
-  // Add user message to UI with alle afbeeldingen
+  // Add user message to UI with all images
   appendMessage("user", text, uploadedImages);
   await saveMessage("user", text, uploadedImages);
   
   // Prepare system message
   const systemMessage = {
     role: "system",
-    content: `Beantwoord in het Nederlands met behulp van visuele elementen zoals emoji’s 🎀🌸, maar zonder te overdrijven. Gebruik duidelijke en rijke HTML-opmaak om het antwoord helder, educatief en aantrekkelijk te maken voor studenten.
+    content: `Beantwoord in het Nederlands met behulp van visuele elementen zoals emoji's 🎀🌸, maar zonder te overdrijven. Gebruik duidelijke en rijke HTML-opmaak om het antwoord helder, educatief en aantrekkelijk te maken voor studenten.
 
 ✅ Structuurvereisten:
 - Gebruik altijd HTML-elementen voor een goed gestructureerd antwoord.
@@ -1684,7 +1748,6 @@ messageForm.addEventListener("submit", async (e) => {
 - Gebruik <ul>, <ol>, <li> voor opsommingen en stappenplannen.
 - Gebruik <table>, <tr>, <th>, <td> voor tabellen bij overzichtelijke data of vergelijkingen.
 - Gebruik onderstaande speciale blokken waar gepast:
-
 
 <div class="definition-box">...</div>      → Voor definities
 <div class="example-box">...</div>         → Voor voorbeelden
@@ -1736,21 +1799,7 @@ messageForm.addEventListener("submit", async (e) => {
   try {
     console.log("Sending payload to backend proxy:", JSON.stringify(payload, null, 2));
     
-    const res = await fetch(`${BACKEND_URL}/chat`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-    
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error(`API responded with status ${res.status}:`, errorText);
-      throw new Error(`API responded with status ${res.status}: ${errorText}`);
-    }
-    
-    const data = await res.json();
+    const data = await makeAPICall(payload);
     console.log("API response:", data);
     
     let aiMsg = data.choices?.[0]?.message?.content || "(Geen antwoord ontvangen)";
@@ -1770,9 +1819,22 @@ messageForm.addEventListener("submit", async (e) => {
     });
     
   } catch (err) {
-    console.error("Fout bij genereren:", err);
+    console.error("Error generating response:", err);
     removeLoadingIndicator(loadingId);
-    appendMessage("assistant", "❌ Er is een fout opgetreden bij het genereren van een antwoord. Probeer het later opnieuw.");
+    
+    // Provide different error messages based on error type
+    let errorMessage;
+    if (err.message.includes('timeout') || err.name === 'AbortError') {
+      errorMessage = "⏱️ De AI service reageerde te langzaam. Probeer het opnieuw met een kortere vraag.";
+    } else if (err.message.includes('network') || err.message.includes('fetch')) {
+      errorMessage = "🌐 Verbindingsprobleem. Controleer je internetconnectie en probeer opnieuw.";
+    } else if (err.message.includes('429') || err.message.includes('rate limit')) {
+      errorMessage = "🚦 Te veel verzoeken. Wacht even en probeer opnieuw.";
+    } else {
+      errorMessage = "❌ Er is een fout opgetreden bij het genereren van een antwoord. Probeer het later opnieuw.";
+    }
+    
+    appendMessage("assistant", errorMessage);
   }
 });
 
